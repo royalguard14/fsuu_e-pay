@@ -78,6 +78,8 @@ Route::prefix('payments')->name('payment.')->middleware(['auth'])->group(functio
     Route::get('/{userId}/fee-breakdown', [PaymentController::class, 'getFeeBreakdown'])->name('userBreakfee');
   
     Route::get('/{userId}/previous-balance', [PaymentController::class, 'getPreviousBalance']);
+    Route::get('/{studentId}/payment-details', [PaymentController::class, 'getPaymentDetails']);
+
 
 
 
@@ -86,8 +88,7 @@ Route::prefix('payments')->name('payment.')->middleware(['auth'])->group(functio
     Route::get('/student', [PaymentController::class, 'student'])
     ->name('student')
     ->middleware('checkRole:Student');
-    Route::get('/sfee-breakdown', [PaymentController::class, 'studentFeeBreakdown'])->name('sfee-breakdown');
-  
+      
 
 
 

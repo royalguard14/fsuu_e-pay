@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->foreignId('section_id')->constrained('sections')->onDelete('cascade');
             $table->foreignId('academic_year_id')->constrained('academic_years')->onDelete('cascade');
             $table->date('enrollment_date');
+            $table->boolean('scholar')->default(0); // New column for scholarship status
             $table->timestamps();
         });
     }

@@ -23,6 +23,10 @@ public function index()
         ->pluck('grade_level_id')
         ->toArray();
 
+
+
+
+
     return view('paybreak.index', compact('feeBreakdowns', 'academicYears', 'gradeLevels', 'currentYear', 'usedGradeLevels'));
 }
 

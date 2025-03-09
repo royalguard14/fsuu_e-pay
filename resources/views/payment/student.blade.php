@@ -3,7 +3,6 @@
 Payment Management
 @endsection
 @section('content')
-<!-- Check for Session Success -->
 @if(session('success'))
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -19,14 +18,13 @@ Payment Management
     document.addEventListener('DOMContentLoaded', function() {
         Toast.fire({
             icon: 'error',
-            title: '{{ $errors->first() }}'  // Show the first validation error
+            title: '{{ $errors->first() }}'
         });
     });
 </script>
 @endif
-<!-- Main Content -->
+
 <div class="row">
-    <!-- Left col: Pay via GCash -->
     <section class="col-lg-5 connectedSortable">
         <div class="card">
             <div class="card-header">
@@ -54,165 +52,269 @@ Payment Management
             </div>
         </div>
     </section>
-    <!-- Right col: Payment History and Fee Breakdown -->
+
     <section class="col-lg-7 connectedSortable">
         <div class="card card-tabs">
-          <div class="card-header p-0 pt-1">
-            <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
-              <li class="nav-item">
-                <a class="nav-link active" id="custom-tabs-one-home-tab" data-toggle="pill" href="#custom-tabs-one-home" role="tab" aria-controls="custom-tabs-one-home" aria-selected="true">Payment History</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="custom-tabs-one-profile-tab" data-toggle="pill" href="#custom-tabs-one-profile" role="tab" aria-controls="custom-tabs-one-profile" aria-selected="false">Particular</a>
-            </li>
-        </ul>
-    </div>
-    <div class="card-body">
-        <div class="tab-content" id="custom-tabs-one-tabContent">
-          <div class="tab-pane fade show active" id="custom-tabs-one-home" role="tabpanel" aria-labelledby="custom-tabs-one-home-tab">
-            <table class="table table-head-fixed text-nowrap" id="example3">
+            <div class="card-header p-0 pt-1">
+                <ul class="nav nav-tabs" id="payment-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="payment-history-tab" data-toggle="pill" href="#payment-history" role="tab" aria-controls="payment-history" aria-selected="true">Payment History</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="fee-breakdown-tab" data-toggle="pill" href="#fee-breakdown" role="tab" aria-controls="fee-breakdown" aria-selected="false">Particular</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="payment-details-tab" data-toggle="pill" href="#payment-details" role="tab" aria-controls="payment-details" aria-selected="false">Payment Details</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+
+                <div class="tab-content" id="payment-tab-content">
+                    <div class="tab-pane fade show active" id="payment-history" role="tabpanel" aria-labelledby="payment-history-tab">
+                            <table class="table table-head-fixed text-nowrap table-striped" id="paymentHistoryTable">
                 <thead>
                     <tr>
+                        <th>Date</th>
+                        <th>Amount</th>
                         <th>Reference No.</th>
-                        <th>Amount Paid</th>
-                        <th>Payment Date</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @foreach($payments as $payment)
-                    <tr>
-                        <td>{{ $payment->reference_number }}</td>
-                        <td>₱{{ number_format($payment->amount_paid, 2) }}</td>
-                        <td>{{ \Carbon\Carbon::parse($payment->payment_date)->format('Y-m-d') }}</td>
-                    </tr>
-                    @endforeach
-                </tbody>
+                <tbody id="paymentHistory"></tbody>
             </table>
-        </div>
-        <div class="tab-pane fade" id="custom-tabs-one-profile" role="tabpanel" aria-labelledby="custom-tabs-one-profile-tab">
-   <table id="feeBreakdownTable" class="table table-striped table-bordered">
-    <thead>
-        <tr>
-            <th>Fee Type</th>
-            <th>Amount</th>
-        </tr>
-    </thead>
-    <tbody id="feeBreakdown"></tbody>
-</table>
+                    </div>
+                    <div class="tab-pane fade" id="fee-breakdown" role="tabpanel" aria-labelledby="fee-breakdown-tab">
+                           <table class="table table-head-fixed text-nowrap table-striped" id="feeBreakdownTable">
+            <thead>
+                <tr>
+                    <th>Fee Type</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody id="feeBreakdown"></tbody>
+        </table>
 
-    </div>
+                            </div>
+                    <div class="tab-pane fade" id="payment-details" role="tabpanel" aria-labelledby="payment-details-tab">
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Total Paid</th>
+                                <td id="totalPaid"></td>
+                            </tr>
+                            <tr>
+                                <th>Total Balance</th>
+                                <td id="totalBalance"></td>
+                            </tr>
+                            <tr>
+                                <th>Suggested Amount (Unpaid Balance)</th>
+                                <td id="suggestedAmount"></td>
+                            </tr>
+                        </table>
+                        <h5>Monthly Payment Status</h5>
+                        <table class="table table-striped" id="monthlyPaymentsTable">
+                            <thead>
+                                <tr>
+                                    <th>Month</th>
+                                    <th>Amount Due</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monthlyPayments">
+
+
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
-</div>
-<!-- /.card -->
-</section>
-</div>
-@endsection
-@section('scripts')
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+  // let userId = {{ auth()->user()->id }};
+
+            let userId = 4;
+loadPaymentDetails(userId);
+loadPaymentHistory(userId);
+loadFeeBreakdown(userId)
+         
+        });
+    </script>
+
+
 <script>
 
-function loadFeeBreakdown(studentId) {
-    fetch(`/payments/sfee-breakdown`)
-        .then(response => response.json())
-        .then(data => {
-            console.log('Fee breakdown response:', data); // Debugging line
 
-            let tableBody = document.getElementById('feeBreakdown');
-            tableBody.innerHTML = '';
+function payViaGcash() {
+    let amount = document.getElementById('amount').value;
+    let reference_number = document.getElementById('reference_number').value;
+    let notes = document.getElementById('notes').value;
+    fetch('/payments/gcash', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            amount,
+            reference_number,
+            notes
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Toast.fire({
+                icon: 'success',
+                title: data.message
+            });
+            location.reload();
+        } else {
+            Toast.fire({
+                icon: 'error',
+                title: data.message
+            });
+        }
+    })
+    .catch(error => console.error('Error submitting GCash payment:', error));
+}
 
-            if (Array.isArray(data) && data.length > 0) {
-                let totalAmount = 0;
 
-                // Prepare fee breakdown rows
-                let rows = data.map(fee => {
-                    let amount = parseFloat(fee.amount);
-                    totalAmount += amount;
+</script>
 
-                    return `
+    <script type="text/javascript">
+        function loadPaymentDetails(studentId) {
+            fetch(`/payments/${studentId}/payment-details`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('totalPaid').innerText = `₱${data.totalPaid}`;
+                document.getElementById('totalBalance').innerText = `₱${data.totalBalance}`;
+                document.getElementById('suggestedAmount').innerText = `₱${data.suggestedAmount}`;
+                const tableBody = document.querySelector('#monthlyPaymentsTable tbody');
+            tableBody.innerHTML = ''; // Clear existing rows
+            data.monthlyPayments.forEach(payment => {
+                const row = `
+                    <tr>
+                        <td>${payment.month}</td>
+                        <td>₱${payment.amount}</td>
+                        <td>${payment.status}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        })
+            .catch(error => console.error('Error fetching payment details:', error));
+        }
+    </script>
+
+<script type="text/javascript">
+    function loadPaymentHistory(studentId) {
+        fetch(`/payments/${studentId}/payments`)
+            .then(response => response.json())
+            .then(data => {
+                let tableBody = document.getElementById('paymentHistory');
+                tableBody.innerHTML = '';
+                if (data.length > 0) {
+                    data.forEach(payment => {
+                        // Format the date like 'March 9, 2025'
+                        let date = new Date(payment.payment_date);
+                        let formattedDate = date.toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+
+                        let row = `
+                            <tr>
+                                <td>${formattedDate}</td>
+                                <td>₱${parseFloat(payment.amount_paid).toFixed(2)}</td>
+                                <td>${payment.reference_number || 'N/A'}</td>
+                            </tr>
+                        `;
+                        tableBody.innerHTML += row;
+                    });
+
+                    $('#paymentHistoryTable').DataTable().destroy();
+                    $('#paymentHistoryTable').DataTable({
+                        "paging": true,
+                        "lengthChange": false,
+                        "searching": true,
+                        "ordering": false,
+                        "info": false,
+                        "autoWidth": false,
+                        "responsive": true,
+                    });
+                } else {
+                    tableBody.innerHTML = '<tr><td colspan="3" class="text-center">No payment history available.</td></tr>';
+                }
+            })
+            .catch(error => console.error('Error loading payment history:', error));
+    }
+</script>
+
+
+    <script type="text/javascript">
+        function loadFeeBreakdown(studentId) {
+    fetch(`/payments/${studentId}/fee-breakdown`)
+    .then(response => response.json())
+    .then(data => {
+        let tableBody = document.getElementById('feeBreakdown');
+        tableBody.innerHTML = '';
+        if (data.length > 0) {
+            let totalAmount = 0;
+                // Prepare fee rows and calculate total
+            let rows = data.map(fee => {
+                let amount = parseFloat(fee.amount);
+                totalAmount += amount;
+                return `
                         <tr>
                             <td>${fee.fee_type}</td>
                             <td>₱${amount.toFixed(2)}</td>
                         </tr>
-                    `;
-                }).join('');
-
-                // Add fee rows to the table
-                tableBody.innerHTML = rows;
-
-                // Add the total row separately so DataTables won't reorder it
-                let totalRow = `
+                `;
+            }).join('');
+                // Add the fee rows to the table
+            tableBody.innerHTML = rows;
+                // Total row added separately with a unique ID
+            let totalRow = `
                     <tr id="totalRow">
                         <td><strong>Total</strong></td>
                         <td><strong>₱${totalAmount.toFixed(2)}</strong></td>
                     </tr>
-                `;
-                tableBody.innerHTML += totalRow;
-
-                // Destroy DataTable only if it exists
-                if ($.fn.DataTable.isDataTable('#feeBreakdownTable')) {
-                    $('#feeBreakdownTable').DataTable().destroy();
+            `;
+            tableBody.innerHTML += totalRow;
+                // Destroy existing DataTable if it exists
+            if ($.fn.DataTable.isDataTable('#feeBreakdownTable')) {
+                $('#feeBreakdownTable').DataTable().destroy();
+            }
+                // Reinitialize DataTable and ensure the total row stays at the bottom
+            $('#feeBreakdownTable').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": false,
+                "info": false,
+                "autoWidth": false,
+                "responsive": true,
+                "drawCallback": 
+                function () {
+                        // Move the total row to the end after DataTable redraws
+                    $('#feeBreakdownTable tbody').append($('#totalRow'));
                 }
-
-                // Reinitialize DataTable and exclude the total row from sorting
-                $('#feeBreakdownTable').DataTable({
-                    "paging": true,
-                    "lengthChange": false,
-                    "searching": false,
-                    "ordering": false,
-                    "info": false,
-                    "autoWidth": false,
-                    "responsive": true,
-                    "order": [],
-                    "drawCallback": function () {
-                        
-                        $('#feeBreakdownTable tbody').append($('#totalRow'));
-                    }
-                });
-            } else {
-                tableBody.innerHTML = '<tr><td colspan="2" class="text-center">No fee breakdown available.</td></tr>';
-            }
-        })
-        .catch(error => console.error('Error loading fee breakdown:', error));
+            });
+        } else {
+            tableBody.innerHTML = '<tr><td colspan="2" class="text-center">No fee breakdown available.</td></tr>';
+        }
+    })
+    .catch(error => console.error('Error loading fee breakdown:', error));
 }
+    </script>
 
 
-    // Pay via GCash
-    function payViaGcash() {
-        let amount = document.getElementById('amount').value;
-        let reference_number = document.getElementById('reference_number').value;
-        let notes = document.getElementById('notes').value;
-        fetch('/payments/gcash', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({
-                amount,
-                reference_number,
-                notes
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                Toast.fire({
-                    icon: 'success',
-                    title: data.message
-                });
-                location.reload(); // Refresh the page to update the tables
-            } else {
-                Toast.fire({
-                    icon: 'error',
-                    title: data.message
-                });
-            }
-        })
-        .catch(error => console.error('Error submitting GCash payment:', error));
-    }
-    // Auto-load fee breakdown when the page loads
-    document.addEventListener('DOMContentLoaded', function() {
-        let studentId = {{ auth()->user()->id }};
-        loadFeeBreakdown(studentId);
-    });
-</script>
 @endsection

@@ -155,63 +155,100 @@ class PaymentController extends Controller
 
 
 
-////////////////////////
-    public function student ()
-    {
-          $currentAcademicYear = AcademicYear::where('current', true)->first();
-   # $userId = auth()->id
-           $userId = 4;
-
-    $payments = Payment::where('user_id', $userId)
-        ->whereHas('enrollmentHistory', function ($query) use ($currentAcademicYear) {
-            $query->where('academic_year_id', $currentAcademicYear->id);
-        })
-        ->orderBy('created_at', 'desc')
-        ->get();
-
-
-    return view('payment.student', compact('payments'));
-    }
-
-
-
-public function studentFeeBreakdown()
+public function getPaymentDetails($userId)
 {
     $currentAcademicYear = AcademicYear::where('current', true)->first();
-    #$userId = auth()->id();
-    $userId = 4;
-
 
     $enrollment = EnrollmentHistory::where('user_id', $userId)
         ->where('academic_year_id', $currentAcademicYear->id)
-        ->with('gradeLevel')
         ->first();
 
     if (!$enrollment) {
-        return response()->json(['message' => 'No active enrollment found'], 404);
+        return response()->json(['message' => 'No enrollment found'], 404);
     }
 
-    $fee = FeeBreakdown::where('grade_level_id', $enrollment->grade_level_id)
+    $feeBreakdown = FeeBreakdown::where('grade_level_id', $enrollment->grade_level_id)
         ->where('academic_year_id', $currentAcademicYear->id)
         ->first();
 
-    if (!$fee) {
-        return response()->json([]);
+    $totalFees = $feeBreakdown->tuition_fee + collect(json_decode($feeBreakdown->other_fees))->sum();
+
+  
+
+
+
+$monthlyPayment = $enrollment->scholar 
+    ? round($totalFees * 0.2683 / 10) 
+    : round($totalFees / 10);
+
+    $totalPaid = Payment::where('user_id', $userId)
+        ->where('enrollment_history_id', $enrollment->id)
+        ->sum('amount_paid');
+
+
+
+    #$remainingBalance = $totalFees - $totalPaid;
+
+    $remainingBalance = $enrollment->scholar
+    ? round($totalFees  * 0.2683) 
+    : $totalFees - $totalPaid;
+
+    $months = [
+        'June', 'July', 'August', 'September', 'October', 'November',
+        'December', 'January', 'February', 'March'
+    ];
+
+    $monthlyPayments = [];
+    $paidAmount = $totalPaid;
+    $unpaidBalance = 0;
+
+    foreach ($months as $index => $month) {
+        $year = $index < 7 ? $currentAcademicYear->start : $currentAcademicYear->end;
+        $due = $monthlyPayment;
+
+        if ($paidAmount >= $due) {
+            $status = 'Paid';
+            $paidAmount -= $due;
+            $due = 0; // Set amount to ₱0 if fully paid
+        } else {
+            if ($paidAmount > 0) {
+                $due -= $paidAmount;
+                $paidAmount = 0;
+            }
+            $status = $due > 0 ? 'Unpaid' : 'Paid';
+        }
+
+        // Add unpaid amounts only for months marked as unpaid
+        if ($status === 'Unpaid') {
+            $unpaidBalance += $due;
+        }
+
+        $monthlyPayments[] = [
+            'month' => "$month $year",
+            'amount' => number_format($due),
+            'status' => $status
+        ];
     }
 
-    $otherFees = json_decode($fee->other_fees, true);
-
-    $breakdown = collect([['fee_type' => 'Tuition Fee', 'amount' => $fee->tuition_fee]]);
-
-    foreach ($otherFees as $key => $amount) {
-        $breakdown->push([
-            'fee_type' => ucwords(str_replace('_', ' ', $key)),
-            'amount' => $amount
-        ]);
-    }
-
-    return response()->json($breakdown);
+    return response()->json([
+        'totalPaid' => number_format($totalPaid),
+        'totalBalance' => number_format($remainingBalance),
+        'suggestedAmount' => number_format($unpaidBalance), // Add suggested amount
+        'monthlyPayments' => $monthlyPayments
+    ]);
 }
+
+
+
+
+
+////////////////////////
+
+public function student()
+{
+     return view('payment.student');
+}
+
 
 public function payViaGcash(Request $request)
 {
@@ -245,6 +282,28 @@ public function payViaGcash(Request $request)
 
     return response()->json(['success' => true, 'message' => 'Payment submitted successfully']);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }
