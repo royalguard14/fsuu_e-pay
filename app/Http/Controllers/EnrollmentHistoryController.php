@@ -78,9 +78,9 @@ $gradeLevelsWithSections = $gradeLevels->map(function ($grade) use ($sections) {
 public function getSections($gradeId)
 {
     $grade = GradeLevel::find($gradeId);
-
     $sectionIds = $grade->section_ids;
     $sections = Section::whereIn('id', $sectionIds)->get();
+
 
     return response()->json(['sections' => $sections]);
 }

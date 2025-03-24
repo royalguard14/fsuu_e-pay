@@ -10,7 +10,8 @@ return new class extends Migration {
             $table->id();
             $table->string('account_name');
             $table->string('account_number');
-            $table->text('notes')->nullable();
+            $table->text('qrcode')->nullable();
+            $table->boolean('isActive')->default(false); 
             $table->timestamps();
         });
     }

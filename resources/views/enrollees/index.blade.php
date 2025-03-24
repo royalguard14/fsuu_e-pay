@@ -112,22 +112,30 @@ Enrollees Management
 
 
 <script type="text/javascript">
-    function loadSections() {
+
+
+function loadSections() {
     const gradeId = document.getElementById('grade').value;
     const sectionDropdown = document.getElementById('section');
 
     sectionDropdown.innerHTML = '<option value="">Loading...</option>';
 
-    fetch(`enrollees/get-sections/${gradeId}`)
-        .then(response => response.json())
+    fetch(`/enrollees/get-sections/${gradeId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             sectionDropdown.innerHTML = '<option value="">Select Section</option>';
             data.sections.forEach(section => {
                 sectionDropdown.innerHTML += `<option value="${section.id}">${section.section_name}</option>`;
             });
         })
-        .catch(() => {
-            sectionDropdown.innerHTML = '<option value="">Failed to load sections</option>';
+        .catch(error => {
+            console.error('Error loading sections:', error);
+            sectionDropdown.innerHTML = `<option value="">Failed to load sections (${error.message})</option>`;
         });
 }
 

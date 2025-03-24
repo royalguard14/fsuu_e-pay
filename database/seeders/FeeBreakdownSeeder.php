@@ -39,6 +39,7 @@ class FeeBreakdownSeeder extends Seeder
                     'support_personnel_fee' => 200,
                     'testing_materials_fee' => 200,
                     'tle_fee' => 100,
+                    'safety_housekeeping_sanitation' => 50,
                 ]),
             ],
         ];

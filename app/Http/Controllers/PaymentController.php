@@ -9,6 +9,9 @@ use App\Models\EnrollmentHistory;
 use App\Models\AcademicYear;
 use App\Models\FeeBreakdown;
 use App\Models\Payment;
+use App\Models\GcashInformation;
+use App\Models\GcashTransaction;
+
 
 class PaymentController extends Controller
 {
@@ -114,7 +117,9 @@ class PaymentController extends Controller
             'payment_method' => $request->payment_method,
             'payment_date' => now(),
             'reference_number' => strtoupper(uniqid()),
-            'notes' => $request->notes ?? null
+            'notes' => $request->notes ?? null,
+            'cashier_id' => auth()->id()
+            
         ]);
 
         return response()->json(['success' => true, 'message' => 'Payment recorded successfully', 'payment' => $payment]);
@@ -250,38 +255,44 @@ public function student()
 }
 
 
+
+
+
 public function payViaGcash(Request $request)
-{
-    $request->validate([
-        'amount' => 'required|numeric|min:1',
-        'reference_number' => 'required|unique:payments',
-    ]);
+    {
+        $activeGcash = GcashInformation::where('isActive', true)->first();
 
-    $currentAcademicYear = AcademicYear::where('current', true)->first();
-    #$userId = auth()->id();
-    $userId = 4;
-    $enrollment = EnrollmentHistory::where('user_id', $userId)
-        ->where('academic_year_id', $currentAcademicYear->id)
-        ->first();
+        if (!$activeGcash) {
+            return redirect()->route('gcash_transactions.index')->with([
+                'success' => 'No active GCash account found!',
+                'icon' => 'error'
+            ]);
+        }
 
-    if (!$enrollment) {
-        return response()->json(['success' => false, 'message' => 'No active enrollment found'], 404);
+        $request->validate([
+            'amount' => 'required|numeric|min:1',
+            'reference_number' => 'nullable|string|max:50',
+            'receipt' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        // Store the receipt image
+        $receiptPath = $request->file('receipt')->store('receipts', 'public');
+
+        // Create the GCash transaction
+        GcashTransaction::create([
+            'user_id' => auth()->id(),
+            'gcash_information_id' => $activeGcash->id, // Automatically use active GCash
+            'amount' => $request->amount,
+            'reference_number' => $request->reference_number,
+            'receipt' => $receiptPath,
+            'status' => 'pending'
+        ]);
+
+        return redirect()->route('payment.student')->with([
+            'success' => 'Transaction submitted successfully!',
+            'icon' => 'success'
+        ]);
     }
-
-
-
-    $payment = Payment::create([
-        'user_id' => $userId,
-        'enrollment_history_id' => $enrollment->id,
-        'amount_paid' => $request->amount,
-        'payment_method' => 'GCash',
-        'payment_date' => now(),
-        'reference_number' => $request->reference_number,
-        'notes' => $request->notes ?? null
-    ]);
-
-    return response()->json(['success' => true, 'message' => 'Payment submitted successfully']);
-}
 
 
 

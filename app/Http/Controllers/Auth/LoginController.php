@@ -1,10 +1,8 @@
 <?php
 namespace App\Http\Controllers\Auth;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
 class LoginController extends Controller
 {
     /*
@@ -16,15 +14,12 @@ class LoginController extends Controller
     | redirecting them to your home screen.
     |
     */
-
     protected $redirectTo = '/login';
-
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
         $this->middleware('auth')->only('logout');
     }
-
     /**
      * Show the login form.
      *
@@ -34,7 +29,6 @@ class LoginController extends Controller
     {
         return view('auth.login');  // Return the login view
     }
-
     /**
      * Login a user with either username or email.
      *
@@ -48,20 +42,17 @@ class LoginController extends Controller
             'login' => 'required|string',  // Login field (email or username)
             'password' => 'required|string',  // Password field
         ]);
-
         // Attempt login with username or email
         if (Auth::attempt(['username' => $request->login, 'password' => $request->password]) ||
             Auth::attempt(['email' => $request->login, 'password' => $request->password])) {
             // Redirect based on the user's role after successful login
             return $this->authenticated($request, Auth::user());
-        }
-
-        // If login fails, show an error
-        return back()->withErrors([
-            'login' => ['The provided credentials are incorrect.'],
-        ]);
     }
-
+        // If login fails, show an error
+    return back()->withErrors([
+        'login' => ['The provided credentials are incorrect.'],
+    ]);
+}
     /**
      * Logout the user and redirect to the homepage.
      *
@@ -73,10 +64,7 @@ class LoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
-        return redirect('/');
-    }
-
+        return redirect()->route('home');    }
     /**
      * Redirect the user after login based on their role.
      *
@@ -84,23 +72,26 @@ class LoginController extends Controller
      * @param \App\Models\User $user
      * @return \Illuminate\Http\RedirectResponse
      */
-protected function authenticated(Request $request, $user)
-{
-
-
-    // Ensure the role relationship is loaded
-    if ($user->role && $user->role->role_name) {
-        // Redirect based on the role name
-        if ($user->role->role_name == 'Developer') {
-            return redirect()->route('developer.dashboard');
+    protected function authenticated(Request $request, $user)
+    {
+        if ($user->role && $user->role->role_name) {
+            if ($user->role->role_name == 'Developer') {
+                return redirect()->route('dashboard.developer');
+            }
+            if ($user->role->role_name == 'Admin') {
+                return redirect()->route('dashboard.admin');
+            }
+            if ($user->role->role_name == 'Cashier') {
+                return redirect()->route('dashboard.admin');
+            }
+            if ($user->role->role_name == 'Student') {
+                return redirect()->route('dashboard.admin');
+            }
+            if ($user->role->role_name == 'Parent') {
+                return redirect()->route('error');
+            }
         }
-
-        if ($user->role->role_name == 'User') {
-            return redirect()->route('user.dashboard');
-        }
+    
+        return redirect()->route('home');
     }
-
-    // If no valid role or role_name, fallback to the home page
-    return redirect()->route('home');
-}
 }

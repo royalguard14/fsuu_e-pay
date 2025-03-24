@@ -21,8 +21,9 @@ class Payment extends Model
         'payment_date',
         'reference_number',
         'notes',
+        'cashier_id',
     ];
-//cashier_id
+//
 
   protected $casts = [
         'payment_date' => 'datetime'

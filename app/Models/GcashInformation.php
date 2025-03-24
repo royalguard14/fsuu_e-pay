@@ -15,7 +15,11 @@ class GcashInformation extends Model
        protected static $logAttributes = [
     'account_name',
     'account_number',
-    'notes'
+    'qr_code',
+    'isActive'
+];
+protected $casts = [
+    'isActive' => 'boolean',
 ];
 
 public static function boot()
@@ -46,6 +50,7 @@ public static function boot()
     protected $fillable = [
         'account_name',
         'account_number',
-        'notes'
+        'qr_code',
+        'isActive'
     ];
 }

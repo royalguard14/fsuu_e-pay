@@ -82,18 +82,52 @@ Academic Year Management
 </div>
 
 <script>
-    function setCurrentYear(yearId) {
-        fetch(`/academic/${yearId}/set-current`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Content-Type': 'application/json'
-            }
-        }).then(response => {
-            location.reload();
-        }).catch(error => {
-            console.error('Error:', error);
+  function setCurrentYear(yearId) {
+    fetch(`/academic/${yearId}/set-current`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            Toast.fire({
+                icon: data.icon,
+                title: data.success
+            });
+
+            // Uncheck all other checkboxes
+            document.querySelectorAll('.form-check-input').forEach(input => {
+                input.checked = false;
+            });
+
+            // Check only the current one
+            document.getElementById(`current_year_${yearId}`).checked = true;
+        } else if (data.error) {
+            Toast.fire({
+                icon: data.icon,
+                title: data.error
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+        Toast.fire({
+            icon: 'error',
+            title: 'Something went wrong!'
         });
-    }
+
+        // Revert the checkbox if there’s an error
+        const checkbox = document.getElementById(`current_year_${yearId}`);
+        checkbox.checked = !checkbox.checked;
+    });
+}
 </script>
 @endsection

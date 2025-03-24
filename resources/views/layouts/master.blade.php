@@ -127,7 +127,7 @@
                 <li class="nav-item">
       <a href="{{ route(config('payments.' . (auth()->user()->role->role_name ?? 'default'))) }}" class="nav-link">
     <i class="nav-icon fas fa-circle"></i>
-    <p> Pay Now</p>
+    <p> Payment</p>
 </a>
 
           </a>
@@ -294,6 +294,8 @@
     timer: 3000
   });
 </script>
+
+
 <!-- DataTables  & Plugins -->
 <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>

@@ -46,12 +46,17 @@ public static function boot()
 
 
 protected $casts = [
-    'section_ids' => 'array', // Cast JSON to array
+    'section_ids' => 'array'
 ];
 
 public function sections()
 {
     return $this->belongsToMany(Section::class);
+}
+
+public function enrollmentHistories()
+{
+    return $this->hasMany(EnrollmentHistory::class, 'grade_level_id');
 }
 
 

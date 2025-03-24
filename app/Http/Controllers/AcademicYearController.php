@@ -42,20 +42,26 @@ class AcademicYearController extends Controller
 
 
 
-    public function setCurrent($id)
+ public function setCurrent($id)
 {
     try {
-        // Set all years to false first
+        // Unset current for all academic years
         AcademicYear::query()->update(['current' => false]);
 
-        // Set the selected year to true
-        $academicYear = AcademicYear::findOrFail($id);
-        $academicYear->update(['current' => true]);
+        // Set current for the selected year
+        $year = AcademicYear::findOrFail($id);
+        $year->current = true;
+        $year->save();
 
-        return response()->json(['success' => 'Current year updated successfully']);
+        return response()->json([
+            'success' => 'Academic year set as current successfully!',
+            'icon' => 'success'
+        ]);
     } catch (\Exception $e) {
-    
-        return response()->json(['error' => 'Failed to update current year'], 500);
+        return response()->json([
+            'error' => 'Failed to set current academic year.',
+            'icon' => 'error'
+        ]);
     }
 }
 

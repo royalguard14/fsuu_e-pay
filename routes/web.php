@@ -13,6 +13,7 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\GcashInformationController;
 use App\Http\Controllers\FeeBreakdownController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\GcashTransactionController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -23,19 +24,15 @@ use App\Http\Controllers\PaymentController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-Route::get('/', function () {
-    return view('welcome');
-});
-Route::get('/error', function () {
-    return view('error.index');
-});
-Route::middleware(['auth', 'checkRole:Developer'])->get('/clear-cache', function () {
+Route::get('/', function () {return view('welcome');});
+Route::get('/error', function () {return view('error.index');})->name('error');
+Route::middleware(['auth', 'checkRole:Developer'])->get('/clear', function () {
     Artisan::call('cache:clear');
     Artisan::call('route:clear');
     Artisan::call('config:clear');
     Artisan::call('view:clear');
     return redirect()
-    ->route('developer.dashboard')
+    ->route('dashboard.developer')
     ->with([
         'success' => 'Clear successfully!',
         'icon' => 'success'
@@ -46,11 +43,20 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 
 //Nasa BladeServiceProvider setup nito
-Route::get('/dashboard/developer', [DashboardController::class, 'developer'])->name('developer.dashboard');
-Route::get('/dashboard/user', [DashboardController::class, 'user'])->name('user.dashboard');
 
 
 
+Route::prefix('dashboard')->name('dashboard.')->middleware(['auth'])->group(function () {
+
+
+
+Route::get('/developer', [DashboardController::class, 'developer'])->name('developer');
+Route::get('/admin', [DashboardController::class, 'admin'])->name('admin');
+
+
+
+
+});
 
 
 
@@ -196,11 +202,55 @@ Route::prefix('section')->name('section.')->middleware(['auth', 'checkRole:Admin
 
 Route::prefix('gcash')->name('gcash.')->middleware(['auth', 'checkRole:Admin'])->group(function () {
     Route::get('/', [GcashInformationController::class, 'index'])->name('index');
-    Route::get('/create', [GcashInformationController::class, 'create'])->name('create');
+
+
+   
     Route::post('/store', [GcashInformationController::class, 'store'])->name('store');
     Route::get('/{gcashInformation}/edit', [GcashInformationController::class, 'edit'])->name('edit');
     Route::put('/{gcashInformation}', [GcashInformationController::class, 'update'])->name('update');
     Route::delete('/{gcashInformation}', [GcashInformationController::class, 'destroy'])->name('destroy');
+
+
+Route::get('/mygcashtrans', [GcashInformationController::class, 'mygcash'])
+->name('mygcash')
+->middleware('checkRole:Student');
+
+
+Route::get('/getActive', [GcashTransactionController::class, 'getActive'])
+->name('getActive')
+->middleware('checkRole:Student');
+
+Route::post('/{id}/set-active', [GcashInformationController::class, 'isActive'])
+->name('setActive')
+->middleware('checkRole:Admin');
+
+
+
+Route::get('/allpending', [GcashTransactionController::class, 'allpending'])
+->name('allpending')
+->middleware('checkRole:Cashier');
+
+Route::post('/update-status', [GcashTransactionController::class, 'updateStatus'])->name('update-status');
+
+
+    
+
+
+
+
+
+// Route::get('/gcash-transactions', [GcashInformationController::class, 'index'])->name('index');
+//     Route::get('/gcash-transactions/create', [GcashInformationController::class, 'create'])->name('create');
+//     Route::post('/gcash-transactions', [GcashInformationController::class, 'store'])->name('store');
+//     Route::get('/gcash-transactions/{gcashTransaction}', [GcashInformationController::class, 'show'])->name('show');
+//     Route::post('/gcash-transactions/{gcashTransaction}/approve', [GcashInformationController::class, 'approve'])->name('approve');
+//     Route::post('/gcash-transactions/{gcashTransaction}/reject', [GcashInformationController::class, 'reject'])->name('reject');
+
+
+
+
+
+
 });
 
 

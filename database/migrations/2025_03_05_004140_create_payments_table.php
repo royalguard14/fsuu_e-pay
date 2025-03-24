@@ -19,7 +19,7 @@ public function up(): void
         $table->decimal('amount_paid', 10, 2);
         $table->string('payment_method')->comment('cashier or gcash');
         $table->date('payment_date');
-        $table->string('reference_number')->nullable(); // for GCash
+        $table->string('reference_number')->unique();
         $table->text('notes')->nullable();
         $table->timestamps();
     });
