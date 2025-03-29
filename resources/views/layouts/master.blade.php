@@ -35,7 +35,22 @@
 
 <link rel="stylesheet" href="{{ asset('dist/css/bootstrap.min.css') }}">
 
-
+<style type="text/css">
+      @font-face {
+      font-family: 'RobotoBlack';
+      src: url('{{ asset('Roboto-Black.ttf') }}') format('truetype');
+        font-weight: bold;
+        font-style: normal;
+      }
+      .custom-title-brand {
+        font-family: 'RobotoBlack';
+        color: yellow;
+        -webkit-text-stroke: 1px black; /* Border around each letter */
+        letter-spacing: 1px;
+        margin: 0;
+        text-align: center;
+      }
+</style>
 
 @yield('style')
 
@@ -80,8 +95,8 @@
    <aside class="main-sidebar main-sidebar-custom sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="index3.html" class="brand-link bg-lightblue">
-      <img src="{{ asset('dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-      <span class="brand-text font-weight-light">{{ config('app.custom_name') }}</span>
+      <img src="{{ asset('logo.png') }}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+      <span class="brand-text custom-title-brand">{{ config('app.custom_name') }}</span>
     </a>
     <!-- Sidebar -->
     <div class="sidebar bg-lightblue">
