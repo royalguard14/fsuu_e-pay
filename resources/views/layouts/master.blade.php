@@ -230,7 +230,7 @@
     <!-- /.sidebar-custom -->
 </aside>
 <!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper" >
+<div class="content-wrapper" style="background: url('{{ asset('bg.png') }}') no-repeat center center fixed; background-size: cover;" >
   <!-- Content Header (Page header) -->
   <div class="content-header">
     <div class="container-fluid">
