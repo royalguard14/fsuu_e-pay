@@ -121,7 +121,7 @@
     <nav class="mt-2">
 
       <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" data-widget="treeview" role="menu" data-accordion="false">
-@unless(auth()->user()->role->role_name === 'Cashier')
+@unless(auth()->user()->role->role_name === 'Cashier' || auth()->user()->role->role_name === 'Student')
     <li class="nav-item">
         <a href="{{ route(config('role_dashboard.' . (auth()->user()->role->role_name ?? 'default'))) }}" class="nav-link">
             <i class="nav-icon fas fa-th"></i>
