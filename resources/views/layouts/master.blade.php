@@ -121,20 +121,24 @@
     <nav class="mt-2">
 
       <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" data-widget="treeview" role="menu" data-accordion="false">
-        <li class="nav-item">
-          <a href="{{ route(config('role_dashboard.' . (auth()->user()->role->role_name ?? 'default'))) }}" class="nav-link">
+@unless(auth()->user()->role->role_name === 'Cashier')
+    <li class="nav-item">
+        <a href="{{ route(config('role_dashboard.' . (auth()->user()->role->role_name ?? 'default'))) }}" class="nav-link">
             <i class="nav-icon fas fa-th"></i>
             <p> Dashboard</p>
-          </a>
-        </li>
-@cashier
-        <li class="nav-item">
-          <a href="{{ route(config('payments.' . (auth()->user()->role->role_name ?? 'default'))) }}" class="nav-link">
+        </a>
+    </li>
+@endunless
+
+@if(auth()->user()->role->role_name === 'Cashier' || auth()->user()->role->role_name === 'Student')
+    <li class="nav-item">
+        <a href="{{ route(config('payments.' . (auth()->user()->role->role_name ?? 'default'))) }}" class="nav-link">
             <i class="nav-icon fas fa-circle"></i>
             <p> Payment</p>
-          </a>
-      </li>
-@endcashier
+        </a>
+    </li>
+@endif
+
 
 
 

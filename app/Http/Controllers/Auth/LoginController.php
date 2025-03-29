@@ -99,10 +99,10 @@ class LoginController extends Controller
                 return redirect()->route('dashboard.admin');
             }
             if ($user->role->role_name == 'Cashier') {
-                return redirect()->route('dashboard.admin');
+                return redirect()->route('payment.cashier');
             }
             if ($user->role->role_name == 'Student') {
-                return redirect()->route('dashboard.admin');
+                return redirect()->route('payment.student');
             }
             if ($user->role->role_name == 'Parent') {
                 return redirect()->route('error');

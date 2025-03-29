@@ -244,9 +244,7 @@ Route::get('/mygcashtrans', [GcashInformationController::class, 'mygcash'])
 ->middleware('checkRole:Student');
 
 
-Route::get('/getActive', [GcashTransactionController::class, 'getActive'])
-->name('getActive')
-->middleware('checkRole:Student');
+
 
 Route::post('/{id}/set-active', [GcashInformationController::class, 'isActive'])
 ->name('setActive')
@@ -267,19 +265,14 @@ Route::post('/update-status', [GcashTransactionController::class, 'updateStatus'
 
 
 
-// Route::get('/gcash-transactions', [GcashInformationController::class, 'index'])->name('index');
-//     Route::get('/gcash-transactions/create', [GcashInformationController::class, 'create'])->name('create');
-//     Route::post('/gcash-transactions', [GcashInformationController::class, 'store'])->name('store');
-//     Route::get('/gcash-transactions/{gcashTransaction}', [GcashInformationController::class, 'show'])->name('show');
-//     Route::post('/gcash-transactions/{gcashTransaction}/approve', [GcashInformationController::class, 'approve'])->name('approve');
-//     Route::post('/gcash-transactions/{gcashTransaction}/reject', [GcashInformationController::class, 'reject'])->name('reject');
-
-
-
-
-
 
 });
+
+
+
+Route::get('/gcash/getActive', [GcashTransactionController::class, 'getActive'])
+->name('gcash.getActive')
+->middleware('checkRole:Student');
 
 
 
