@@ -68,3 +68,6 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 "# fsuu_e-pay" 
+
+
+git clone https://github.com/royalguard14/fsuu_e-pay.git && cd fsuu_e-pay && composer install && npm install && cp .env.example .env && php artisan key:generate && php artisan migrate --seed && php artisan serve
