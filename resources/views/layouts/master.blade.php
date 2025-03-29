@@ -248,7 +248,7 @@
 <div class="content-wrapper" style="background: url('{{ asset('bg.png') }}') no-repeat center center fixed; background-size: cover;" >
   <!-- Content Header (Page header) -->
   <div class="content-header">
-    <div class="container-fluid">
+    <div class="container-fluid custom-title-brand">
       <div class="row mb-2">
         <div class="col-sm-6">
           <h1 class="m-0">@yield('header')</h1>
