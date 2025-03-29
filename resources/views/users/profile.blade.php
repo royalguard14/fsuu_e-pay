@@ -36,13 +36,18 @@ Profile Management
             @csrf
             @method('PUT')
 
-            <img 
-            id="profileImage" 
-            class="profile-user-img img-fluid img-circle"
-            src="{{ $profile->profile_picture && file_exists(storage_path('app/public/' . $profile->profile_picture)) ? asset('storage/' . $profile->profile_picture) : asset('dist/img/user2-160x160.jpg') }}" 
-            alt="User profile picture">
+           <img
+    id="profileImage"
+    class="profile-user-img img-fluid img-circle"
+    src="{{ optional($profile)->profile_picture && file_exists(storage_path('app/public/' . optional($profile)->profile_picture)) 
+        ? asset('storage/' . optional($profile)->profile_picture) 
+        : asset('dist/img/user2-160x160.jpg') }}"
+    alt="User profile picture">
+
+
         </div>
-        <h3 class="profile-username text-center">{{ $profile->full_name }}</h3>
+        <h3 class="profile-username text-center">{{ optional($profile)->full_name ?? 'Temporary User' }}</h3>
+
         <p class="text-muted text-center">{{ auth()->user()->role->role_name }}</p>
         <div class="text-center">
         <label for="profile_picture" class="btn btn-outline-primary ">
@@ -81,13 +86,18 @@ Profile Management
                         <!-- First Name -->
                         <div class="form-group col-md-6">
                             <label for="firstname">First Name</label>
-                            <input type="text" id="firstname" name="firstname" value="{{ $profile->firstname }}" class="form-control" required>
+                       <input type="text" id="firstname" name="firstname" 
+       value="{{ optional($profile)->firstname ?? '' }}" 
+       class="form-control" required>
                         </div>
 
                         <!-- Last Name -->
                         <div class="form-group col-md-6">
                             <label for="lastname">Last Name</label>
-                            <input type="text" id="lastname" name="lastname" value="{{ $profile->lastname }}" class="form-control" required>
+                        <input type="text" id="lastname" name="lastname" 
+       value="{{ optional($profile)->lastname ?? '' }}" 
+       class="form-control" required>
+
                         </div>
                     </div>
 
@@ -96,46 +106,55 @@ Profile Management
                         <!-- Phone -->
                         <div class="form-group col-md-6">
                             <label for="phone_number">Phone Number</label>
-                            <input type="text" id="phone_number" name="phone_number" value="{{ $profile->phone_number }}" class="form-control">
+                          <input type="text" id="phone_number" name="phone_number" 
+       value="{{ optional($profile)->phone_number ?? '' }}" 
+       class="form-control">
+
                         </div>
 
                         <!-- Birthdate -->
                         <div class="form-group col-md-6">
                             <label for="birthdate">Birthdate</label>
-                            <input type="date" id="birthdate" name="birthdate" value="{{ $profile->birthdate }}" class="form-control">
+                            <input type="date" id="birthdate" name="birthdate" 
+       value="{{ optional($profile)->birthdate ?? '' }}" 
+       class="form-control">
                         </div>
                     </div>
 
                     <!-- Gender and Nationality -->
                     <div class="row">
                         <!-- Gender -->
-                        <div class="form-group col-md-6">
-                            <label for="gender">Gender</label>
-                            <select id="gender" name="gender" class="form-control">
-                                <option value="Male" {{ $profile->gender == 'Male' ? 'selected' : '' }}>Male</option>
-                                <option value="Female" {{ $profile->gender == 'Female' ? 'selected' : '' }}>Female</option>
-                                <option value="Other" {{ $profile->gender == 'Other' ? 'selected' : '' }}>Other</option>
-                            </select>
-                        </div>
+    <div class="form-group col-md-6">
+    <label for="gender">Gender</label>
+    <select id="gender" name="gender" class="form-control">
+        <option value="Male" {{ optional($profile)->gender == 'Male' ? 'selected' : '' }}>Male</option>
+        <option value="Female" {{ optional($profile)->gender == 'Female' ? 'selected' : '' }}>Female</option>
+        <option value="Other" {{ optional($profile)->gender == 'Other' ? 'selected' : '' }}>Other</option>
+    </select>
+</div>
+
 
                         <!-- Nationality -->
-                        <div class="form-group col-md-6">
-                            <label for="nationality">Nationality</label>
-                            <input type="text" id="nationality" name="nationality" value="{{ $profile->nationality }}" class="form-control">
-                        </div>
+                  <div class="form-group col-md-6">
+    <label for="nationality">Nationality</label>
+    <input type="text" id="nationality" name="nationality" 
+        value="{{ optional($profile)->nationality }}" class="form-control">
+</div>
+
                     </div>
 
-                    <!-- Address -->
-                    <div class="form-group">
-                        <label for="address">Address</label>
-                        <textarea id="address" name="address" class="form-control" rows="2">{{ $profile->address }}</textarea>
-                    </div>
+  <!-- Address -->
+<div class="form-group">
+    <label for="address">Address</label>
+    <textarea id="address" name="address" class="form-control" rows="2">{{ optional($profile)->address }}</textarea>
+</div>
 
-                    <!-- Bio -->
-                    <div class="form-group">
-                        <label for="bio">Bio</label>
-                        <textarea id="bio" name="bio" class="form-control" rows="3">{{ $profile->bio }}</textarea>
-                    </div>
+<!-- Bio -->
+<div class="form-group">
+    <label for="bio">Bio</label>
+    <textarea id="bio" name="bio" class="form-control" rows="3">{{ optional($profile)->bio }}</textarea>
+</div>
+
 
                     <div class="text-center mt-4">
                         <button type="submit" class="btn btn-primary px-5">Save Changes</button>

@@ -45,7 +45,7 @@ public static function boot()
      
 
   protected $table = 'profiles'; 
-    protected $fillable = ['user_id', 'firstname', 'lastname', 'phone_number', 'address', 'profile_picture', 'birthdate', 'gender', 'nationality', 'bio','lrn'];
+    protected $fillable = ['user_id', 'firstname', 'lastname', 'phone_number', 'address', 'profile_picture', 'birthdate', 'gender', 'nationality', 'bio','lrn',"profile_picture"];
 
     // Define the relationship with the User model
     // public function user()

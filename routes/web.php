@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ModuleController;
@@ -24,7 +25,7 @@ use App\Http\Controllers\GcashTransactionController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-Route::get('/', function () {return view('welcome');});
+Route::get('/', function () { return redirect('/login');});
 Route::get('/error', function () {return view('error.index');})->name('error');
 Route::middleware(['auth', 'checkRole:Developer'])->get('/clear', function () {
     Artisan::call('cache:clear');
@@ -42,6 +43,21 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 
+Route::post('/logout', function () {
+    Auth::logout();
+    return redirect('/login'); // Redirect to login page or home
+})->name('logout');
+
+
+
+
+
+
+
+
+
+
+
 //Nasa BladeServiceProvider setup nito
 
 
@@ -50,8 +66,12 @@ Route::prefix('dashboard')->name('dashboard.')->middleware(['auth'])->group(func
 
 
 
-Route::get('/developer', [DashboardController::class, 'developer'])->name('developer');
-Route::get('/admin', [DashboardController::class, 'admin'])->name('admin');
+Route::get('/developer', [DashboardController::class, 'developer'])
+->middleware('checkRole:Developer')
+->name('developer');
+Route::get('/admin', [DashboardController::class, 'admin'])
+->middleware('checkRole:Admin')
+->name('admin');
 
 
 
@@ -125,8 +145,11 @@ Route::prefix('users')->name('users.')->middleware(['auth', 'checkRole:Developer
     Route::get('/', [UserController::class, 'index'])->name('index');  
     Route::post('store', [UserController::class, 'store'])->name('store');  
     Route::put('{user}', [UserController::class, 'update'])->name('update');  
-    Route::delete('{user}', [UserController::class, 'destroy'])->name('destroy');  
+    Route::delete('{user}', [UserController::class, 'destroy'])->name('destroy'); 
+
 });
+
+Route::post('/users/{id}/toggle-active', [UserController::class, 'toggleActive']) ->middleware('checkRole:Admin');;
 
 
 
@@ -187,6 +210,11 @@ Route::prefix('enrollees')->name('enrollees.')->middleware(['auth', 'checkRole:A
     Route::post('/store', [EnrollmentHistoryController::class, 'enroll'])->name('store');
     Route::put('/{enrollment}', [EnrollmentHistoryController::class, 'update'])->name('update');
     Route::delete('/{enrollment}', [EnrollmentHistoryController::class, 'destroy'])->name('destroy');
+
+
+
+    Route::post('/transfer', [EnrollmentHistoryController::class, 'transfer'])->name('transfer');
+
 });
 
 

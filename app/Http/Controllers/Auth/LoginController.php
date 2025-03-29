@@ -35,24 +35,41 @@ class LoginController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function login(Request $request)
-    {
-        // Validate login (either email or username) and password
-        $request->validate([
-            'login' => 'required|string',  // Login field (email or username)
-            'password' => 'required|string',  // Password field
-        ]);
-        // Attempt login with username or email
-        if (Auth::attempt(['username' => $request->login, 'password' => $request->password]) ||
-            Auth::attempt(['email' => $request->login, 'password' => $request->password])) {
-            // Redirect based on the user's role after successful login
-            return $this->authenticated($request, Auth::user());
-    }
-        // If login fails, show an error
-    return back()->withErrors([
-        'login' => ['The provided credentials are incorrect.'],
+ public function login(Request $request)
+{
+    // Validate login input (either email or username)
+    $request->validate([
+        'login' => 'required|string',  // Login field (email or username)
+        'password' => 'required|string',  // Password field
     ]);
+
+    // Find the user by username or email
+    $user = \App\Models\User::where('username', $request->login)
+        ->orWhere('email', $request->login)
+        ->first();
+
+    // Check if the user exists
+    if (!$user) {
+        return back()->withErrors(['login' => 'The provided credentials are incorrect.']);
+    }
+
+    // Check if the user is active
+    if (!$user->isActive) {
+        return back()->withErrors(['login' => 'Your account is inactive. Please contact the administrator.']);
+    }
+
+    // Attempt login with username or email
+    if (Auth::attempt(['username' => $request->login, 'password' => $request->password]) ||
+        Auth::attempt(['email' => $request->login, 'password' => $request->password])) {
+        
+        // Redirect based on the user's role after successful login
+        return $this->authenticated($request, Auth::user());
+    }
+
+    // If login fails, show an error
+    return back()->withErrors(['login' => 'The provided credentials are incorrect.']);
 }
+
     /**
      * Logout the user and redirect to the homepage.
      *

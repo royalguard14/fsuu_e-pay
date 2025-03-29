@@ -13,8 +13,8 @@ class GradeLevelSeeder extends Seeder
     public function run(): void
     {
         $grades = [
-            ['level' => 'Kinder', 'section_ids' => null],
-            ['level' => 'Nursery 2', 'section_ids' => null],
+            ['level' => 'Kinder', 'section_ids' => [13]],
+            ['level' => 'Nursery 2', 'section_ids' => [14],
             ['level' => 'Grade 7', 'section_ids' => [1, 2]],
             ['level' => 'Grade 8', 'section_ids' => [3, 4]],
             ['level' => 'Grade 9', 'section_ids' => [5, 6]],

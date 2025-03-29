@@ -10,7 +10,7 @@ return new class extends Migration {
             $table->id();
             $table->string('account_name');
             $table->string('account_number');
-            $table->text('qrcode')->nullable();
+            $table->text('qr_code')->nullable();
             $table->boolean('isActive')->default(false); 
             $table->timestamps();
         });

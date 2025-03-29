@@ -15,7 +15,7 @@ class SectionSeeder extends Seeder
         $sections = [
             'St. John', 'St. Matthew', 'St. James', 'St. Andrew',
             'St. Michael', 'St. Gabriel', 'St. Peter', 'St. Paul',
-            'St. Martha', 'St. Cecilia', 'St. Francis', 'St. Ignatius'
+            'St. Martha', 'St. Cecilia', 'St. Francis', 'St. Ignatius','Kinder','NurseryII'
         ];
 
         foreach ($sections as $section) {

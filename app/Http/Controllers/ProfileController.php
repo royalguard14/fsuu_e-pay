@@ -14,7 +14,21 @@ class ProfileController extends Controller
    public function index()
 {
     $user = auth()->user();
-    $profile = $user->profile;
+
+        // Retrieve the user's profile or create a temporary one
+    $profile = Profile::firstOrNew(['user_id' => $user->id], [
+        'firstname' => 'Temporary',
+        'lastname' => 'User',
+        'phone_number' => '',
+        'address' => '',
+        'profile_picture' => null,
+        'birthdate' => null,
+        'gender' => '',
+        'nationality' => '',
+        'bio' => '',
+        'lrn' => '',
+    ]);
+
     $activityLogs = Activity::where('causer_id', $user->id)->latest()->get();
     return view('users.profile', compact('user', 'profile', 'activityLogs'));
 }

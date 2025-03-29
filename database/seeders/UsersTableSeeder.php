@@ -15,7 +15,7 @@ class UsersTableSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            'username' => 'admin',
+            'username' => 'zear',
             'email' => 'admin@zear.com',
             'password' => Hash::make('password'),
             'role_id' => 1, 
@@ -27,7 +27,7 @@ class UsersTableSeeder extends Seeder
 
 
         User::create([
-            'username' => 'user',
+            'username' => 'admin',
             'email' => 'user@zear.com',
             'password' => Hash::make('password'),
             'role_id' => 2, 

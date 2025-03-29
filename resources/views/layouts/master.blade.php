@@ -32,15 +32,19 @@
 <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('dist/js/chart.js') }}"></script>
 
+
 <link rel="stylesheet" href="{{ asset('dist/css/bootstrap.min.css') }}">
 
 
 
 @yield('style')
 
+@yield('heading')
+
+
+
 </head>
 <body class="hold-transition sidebar-mini layout-footer-fixed layout-fixed ">
-
 
   <div class="wrapper">
     <!-- Navbar -->
@@ -123,16 +127,14 @@
             <p> Dashboard</p>
           </a>
         </li>
-
-                <li class="nav-item">
-      <a href="{{ route(config('payments.' . (auth()->user()->role->role_name ?? 'default'))) }}" class="nav-link">
-    <i class="nav-icon fas fa-circle"></i>
-    <p> Payment</p>
-</a>
-
+@cashier
+        <li class="nav-item">
+          <a href="{{ route(config('payments.' . (auth()->user()->role->role_name ?? 'default'))) }}" class="nav-link">
+            <i class="nav-icon fas fa-circle"></i>
+            <p> Payment</p>
           </a>
-        </li>
-
+      </li>
+@endcashier
 
 
 
@@ -180,7 +182,7 @@
 
 
 
-
+@developer
 
         @if($showDeveloperMode)
         <li class="nav-header">Administrative Tools</li>
@@ -207,7 +209,7 @@
          </ul>
        </li>
        @endif
-
+@enddeveloper
 
 
      </ul>
@@ -295,7 +297,8 @@
   });
 </script>
 
-
+<!-- Select2 -->
+<script src="{{ asset('plugins/select2/js/select2.full.min.js') }}" ></script>
 <!-- DataTables  & Plugins -->
 <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
@@ -335,7 +338,13 @@
       "responsive": true,
     });
   });
+
+
+   
 </script>
 {{-- <script src="{{ asset('dist/js/widget.js') }}"></script> --}}
+
+
+
 </body>
 </html>

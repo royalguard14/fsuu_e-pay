@@ -85,64 +85,72 @@ public function getSections($gradeId)
     return response()->json(['sections' => $sections]);
 }
 
+public function enroll(Request $request)
+{
+    $request->validate([
+        'user_id' => 'required|exists:users,id',
+        'grade_level_id' => 'required|exists:grade_levels,id',
+        'section_id' => 'required|exists:sections,id',
+    ]);
 
-    public function enroll(Request $request)
-    {
+    $currentYear = AcademicYear::where('current', true)->first();
 
-
-
-
-         $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'grade_level_id' => 'required|exists:grade_levels,id',
-            'section_id' => 'required|exists:sections,id',
-
-        ]);
-
-        $currentYear = AcademicYear::where('current', true)->first();
-
-        if (!$currentYear) {
-            return redirect()->route('enrollees.index')->with([
-                'success' => 'No active academic year found',
-                'icon' => 'error'
-            ]);
-        }
-
-
-        $currentIdAY = $currentYear->id;
-
-        // Check if user is already enrolled in this academic year
-        $alreadyEnrolled = EnrollmentHistory::where('user_id', $request->user_id)
-            ->where('academic_year_id', $currentYear)
-            ->exists();
-
-        if ($alreadyEnrolled) {
-            return redirect()->back()->with([
-                'icon' => 'error',
-                'success' => 'This student is already enrolled for the selected academic year.'
-            ]);
-        }
-
-
-          // Create enrollment record
-        EnrollmentHistory::create([
-            'user_id' => $request->user_id,
-            'grade_level_id' => $request->grade_level_id,
-            'section_id' => $request->section_id,
-            'academic_year_id' => $currentIdAY,
-            'enrollment_date' => now(),
-        ]);
-
-        return redirect()->back()->with([
-            'icon' => 'success',
-            'success' => 'Student successfully enrolled!'
+    if (!$currentYear) {
+        return redirect()->route('enrollees.index')->with([
+            'success' => 'No active academic year found',
+            'icon' => 'error'
         ]);
     }
 
+    $currentIdAY = $currentYear->id; // ✅ Correct academic year ID
+
+    // ✅ Check if the user is already enrolled in this academic year
+    $alreadyEnrolled = EnrollmentHistory::where('user_id', $request->user_id)
+        ->where('academic_year_id', $currentIdAY) // ✅ Corrected this line
+        ->exists();
+
+    if ($alreadyEnrolled) {
+        return redirect()->back()->with([
+            'icon' => 'error',
+            'success' => 'This student is already enrolled for the selected academic year.'
+        ]);
+    }
+
+    // ✅ Prevent double-click enrollment (disable button in frontend)
+    EnrollmentHistory::create([
+        'user_id' => $request->user_id,
+        'grade_level_id' => $request->grade_level_id,
+        'section_id' => $request->section_id,
+        'academic_year_id' => $currentIdAY,
+        'enrollment_date' => now(),
+    ]);
+
+    return redirect()->back()->with([
+        'icon' => 'success',
+        'success' => 'Student successfully enrolled!'
+    ]);
+}
 
 
 
 
+
+public function transfer(Request $request) {
+    $request->validate([
+        'enrollment_id' => 'required|exists:enrollment_histories,id',
+        'section_id' => 'required|exists:sections,id',
+    ]);
+
+    $enrollment = EnrollmentHistory::findOrFail($request->enrollment_id);
+    $enrollment->update([
+        'section_id' => $request->section_id
+    ]);
+
+    return redirect()->back()->with([
+        'icon' => 'success',
+        'success' => 'Student successfully transferred!'
+    ]);
+}
 
 
 

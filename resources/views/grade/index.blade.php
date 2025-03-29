@@ -62,7 +62,7 @@ Grade Management
                 <tr>
                     <th>No.</th>
                     <th>Grade Name</th>
-                   
+                   <th>Sections</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -71,7 +71,16 @@ Grade Management
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $grade->level }}</td>
-                                    <td>
+                      <td>
+    @php
+        $sectionIds = is_array($grade->section_ids) ? $grade->section_ids : json_decode($grade->section_ids, true);
+        $sectionNames = \App\Models\Section::whereIn('id', $sectionIds)->pluck('section_name')->toArray();
+    @endphp
+    {{ implode(', ', $sectionNames) }}
+</td>
+
+
+                        <td>
                             <button type="button" class="btn btn-warning" 
                                 data-grade-id="{{ $grade->id }}" 
                                 data-name="{{ $grade->level }}" 

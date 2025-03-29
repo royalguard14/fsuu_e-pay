@@ -92,4 +92,19 @@ public function index()
             'icon' => 'success'
         ]);
     }
+
+
+    public function toggleActive($id, Request $request)
+{
+    $user = User::findOrFail($id);
+    $user->isActive = $request->isActive;
+    $user->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'User status updated successfully.'
+    ]);
+}
+
+
 }
