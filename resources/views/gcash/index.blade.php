@@ -118,7 +118,7 @@ Gcash Information Management
                     </div>
                     <div class="form-group">
                         <label>QR Code (optional)</label>
-                        <input type="file" name="qr_code" class="form-control">
+                        <input type="file" name="qr_code" class="form-control" accept="image/*">
                     </div>
                 </div>
                 <div class="modal-footer">

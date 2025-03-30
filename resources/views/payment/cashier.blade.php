@@ -414,34 +414,48 @@ function submitPayment() {
     <script type="text/javascript">
       
  function getPendingGcash() {
-         fetch(`/gcash/allpending`)
+    fetch(`/gcash/allpending`)
         .then(response => response.json())
         .then(data => {
             let tableBody = document.getElementById('pendingGcash');
             tableBody.innerHTML = '';
+
             if (data.length > 0) {
                 data.forEach(pending => {
-                        // Format the date like 'March 9, 2025'
+                    // Format the date like 'March 9, 2025'
                     let date = new Date(pending.created_at);
                     let formattedDate = date.toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric'
                     });
+
+                    // Handle null profile data
+                    let fullName = pending.profile 
+                        ? `${pending.profile.firstname} ${pending.profile.lastname}` 
+                        : "N/A";
+                    
+                    let accountName = pending.gcash_information?.account_name || "N/A";
+
                     let row = `
-                            <tr>
-                                <td>${formattedDate}</td>
-                                <td>₱${parseFloat(pending.amount).toFixed(2)}</td>
-                                       <td>
-                            <a href="#" onclick="showReceiptModal('${pending.reference_number}', '${pending.receipt}', '${pending.profile.firstname} ${pending.profile.lastname}', '${pending.gcash_information.account_name}')">
-        ${pending.reference_number}
-                            </a>
-    </td>
-                            </tr>
+                        <tr>
+                            <td>${formattedDate}</td>
+                            <td>₱${parseFloat(pending.amount).toFixed(2)}</td>
+                            <td>
+                                <a href="#" onclick="showReceiptModal('${pending.reference_number}', '${pending.receipt}', '${fullName}', '${accountName}')">
+                                    ${pending.reference_number}
+                                </a>
+                            </td>
+                        </tr>
                     `;
                     tableBody.innerHTML += row;
                 });
-               
+
+                // Initialize DataTable (destroy first if already initialized)
+                if ($.fn.DataTable.isDataTable('#pendingGcashTable')) {
+                    $('#pendingGcashTable').DataTable().destroy();
+                }
+
                 $('#pendingGcashTable').DataTable({
                     "paging": true,
                     "lengthChange": false,
@@ -452,11 +466,12 @@ function submitPayment() {
                     "responsive": true,
                 });
             } else {
-                tableBody.innerHTML = '<tr><td colspan="3" class="text-center">No payment history available.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="3" class="text-center">No pending payments available.</td></tr>';
             }
         })
         .catch(error => console.error('Error loading payment history:', error));
-    }
+}
+
 
 
    function showReceiptModal(referenceNumber, receipt, sender, receiver) {

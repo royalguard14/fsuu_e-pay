@@ -16,7 +16,7 @@ class UsersTableSeeder extends Seeder
     {
         User::create([
             'username' => 'zear',
-            'email' => 'admin@zear.com',
+            'email' => 'developer@zear.com',
             'password' => Hash::make('password'),
             'role_id' => 1, 
             'isDeleted' => false,
@@ -28,9 +28,22 @@ class UsersTableSeeder extends Seeder
 
         User::create([
             'username' => 'admin',
-            'email' => 'user@zear.com',
+            'email' => 'admin@zear.com',
             'password' => Hash::make('password'),
             'role_id' => 2, 
+            'isDeleted' => false,
+            'isActive' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+
+
+          User::create([
+            'username' => 'cashier',
+            'email' => 'cashier@zear.com',
+            'password' => Hash::make('password'),
+            'role_id' => 3, 
             'isDeleted' => false,
             'isActive' => true,
             'created_at' => now(),

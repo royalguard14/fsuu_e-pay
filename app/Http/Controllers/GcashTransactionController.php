@@ -19,6 +19,7 @@ class GcashTransactionController extends Controller
 
     public function allpending() {
         $pendings = GcashTransaction::where('status', 'pending')->with('gcashInformation','profile')->get();
+
         return response()->json($pendings);
     }
 

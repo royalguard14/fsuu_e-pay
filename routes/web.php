@@ -1,6 +1,14 @@
 <?php
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Artisan;
+
+
+
+use Illuminate\Http\Request;
+
+
+
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ModuleController;
@@ -27,6 +35,8 @@ use App\Http\Controllers\GcashTransactionController;
 */
 Route::get('/', function () { return redirect('/login');});
 Route::get('/error', function () {return view('error.index');})->name('error');
+
+
 Route::middleware(['auth', 'checkRole:Developer'])->get('/clear', function () {
     Artisan::call('cache:clear');
     Artisan::call('route:clear');
@@ -39,6 +49,45 @@ Route::middleware(['auth', 'checkRole:Developer'])->get('/clear', function () {
         'icon' => 'success'
     ]);
 });
+
+
+
+
+
+Route::middleware(['auth', 'checkRole:Developer'])->get('/terminate-system', function () {
+    return view('terminate'); // Load the view that asks for the password
+});
+
+Route::middleware(['auth', 'checkRole:Developer'])->post('/terminate-action', function (Request $request) {
+    $password = $request->input('password'); // Correct way to get request input
+
+    if ($password !== 'terminate') {
+        return response()->json([
+            'success' => false,
+            'message' => 'Incorrect password!'
+        ]);
+    }
+
+    // Drop all tables, migrate, and seed
+    Artisan::call('migrate:fresh --seed --force');
+
+    return response()->json([
+        'success' => true,
+        'message' => 'System wiped, migrated, and seeded successfully!'
+    ]);
+});
+
+
+
+
+
+
+
+
+
+
+
+
 Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
@@ -228,7 +277,7 @@ Route::prefix('section')->name('section.')->middleware(['auth', 'checkRole:Admin
 
 
 
-Route::prefix('gcash')->name('gcash.')->middleware(['auth', 'checkRole:Admin'])->group(function () {
+Route::prefix('gcash')->name('gcash.')->middleware(['auth'])->group(function () {
     Route::get('/', [GcashInformationController::class, 'index'])->name('index');
 
 
@@ -282,3 +331,8 @@ Route::prefix('fees')->name('fees.')->middleware(['auth', 'checkRole:Admin'])->g
     Route::put('/{feeBreakdown}', [FeeBreakdownController::class, 'update'])->name('update');
     Route::delete('/{feeBreakdown}', [FeeBreakdownController::class, 'destroy'])->name('destroy');
 });
+
+
+
+Route::get('/students/create', [UserController::class, 'createS'])->middleware('checkRole:Admin')->name('users.student');
+Route::post('/students/store', [UserController::class, 'storeS'])->middleware('checkRole:Admin')->name('students.store');

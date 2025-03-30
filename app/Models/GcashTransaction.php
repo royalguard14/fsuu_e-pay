@@ -23,9 +23,12 @@ class GcashTransaction extends Model
         return $this->belongsTo(User::class);
     }
 
-       public function profile() {
-        return $this->belongsTo(Profile::class,'user_id');
-    }
+
+public function profile()
+{
+    return $this->hasOne(Profile::class, 'user_id', 'user_id');
+}
+
 
     // Relationship with GcashInformation
     public function gcashInformation() {

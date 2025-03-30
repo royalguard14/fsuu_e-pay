@@ -107,4 +107,61 @@ public function index()
 }
 
 
+
+ public function storeS(Request $request)
+    {
+        $request->validate([
+            'lrn' => 'required|unique:profiles',
+            'firstname' => 'required',
+            'lastname' => 'required',
+            'phone_number' => 'nullable|string',
+            'birthdate' => 'nullable|date',
+            'gender' => 'required|in:Male,Female,Other',
+            'nationality' => 'nullable|string',
+            'address' => 'nullable|string',
+            'username' => 'required|unique:users',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|confirmed|min:6',
+            'profile_picture' => 'nullable|image|max:2048',
+        ]);
+
+        // Create user account
+        $user = User::create([
+            'username' => $request->username,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role_id' => 4,  // Assuming 4 is the student role
+        ]);
+
+        // Handle profile picture upload
+        $profilePicturePath = null;
+        if ($request->hasFile('profile_picture')) {
+            $profilePicturePath = $request->file('profile_picture')->store('profile_pictures', 'public');
+        }
+
+        // Create profile
+        Profile::create([
+            'user_id' => $user->id,
+            'lrn' => $request->lrn,
+            'firstname' => $request->firstname,
+            'lastname' => $request->lastname,
+            'phone_number' => $request->phone_number,
+            'birthdate' => $request->birthdate,
+            'gender' => $request->gender,
+            'nationality' => $request->nationality,
+            'address' => $request->address,
+            'profile_picture' => $profilePicturePath,
+        ]);
+
+        return redirect()->route('users.index')->with('success', 'Student account created successfully!');
+    }
+
+
+
+        public function createS()
+    {
+        return view('users.student');  // Ensure this matches the view filename
+    }
+
+
 }

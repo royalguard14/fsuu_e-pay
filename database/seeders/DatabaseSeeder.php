@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             SettingSeeder::class,
             GradeLevelSeeder::class,
             SectionSeeder::class,
+             AcademicYearSeeder::class,
             
             
         ]);

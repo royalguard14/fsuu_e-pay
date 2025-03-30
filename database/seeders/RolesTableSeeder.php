@@ -15,14 +15,14 @@ class RolesTableSeeder extends Seeder
     {
      DB::table('roles')->insert([
         'role_name' => 'Developer',
-        'modules' => json_encode([1,2,3,4,5,6,7,8,9,10]),
+        'modules' => json_encode([1,2,3,4,5,6,7,8,9,10,11]),
         'created_at' => now(),
         'updated_at' => now(),
     ]);
 
      DB::table('roles')->insert([
         'role_name' => 'Admin',
-            'modules' => json_encode([5,6,7,8,9,10]),  // Empty array for now, can add specific modules later
+            'modules' => json_encode([5,6,7,8,9,10,11]),  // Empty array for now, can add specific modules later
             'created_at' => now(),
             'updated_at' => now(),
         ]);

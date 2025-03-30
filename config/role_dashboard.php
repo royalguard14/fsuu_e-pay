@@ -1,6 +1,6 @@
 <?php
 return [
-    'Developer' => 'dashboard.admin',
+    'Developer' => 'dashboard.developer',
     'Admin' => 'dashboard.admin',
     'Cashier' => 'payment.cashier',
     'Student' => 'payment.student',

@@ -86,6 +86,12 @@ Module::create([
     'url' => 'fees.index'  
 ]);
 
+Module::create([
+    'name' => 'Students',
+    'icon' => 'fa-users',
+    'description' => 'Manage Student Account',
+    'url' => 'users.student'  
+]);
 
     }
 }
