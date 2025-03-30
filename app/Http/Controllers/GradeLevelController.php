@@ -41,7 +41,7 @@ public function store(Request $request)
     }
 
     try {
-        GradeLevel::create(['level' => $request->grade_name, 'section_ids' => '[]']);
+        GradeLevel::create(['level' => $request->grade_name, 'section_ids' => []]);
 
         return redirect()->route('grade.index')->with([
             'success' => 'Grade level created successfully',
