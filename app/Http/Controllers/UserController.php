@@ -153,7 +153,7 @@ public function index()
             'profile_picture' => $profilePicturePath,
         ]);
 
-        return redirect()->route('users.index')->with('success', 'Student account created successfully!');
+        return redirect()->route('users.student')->with('success', 'Student account created successfully!');
     }
 
 
