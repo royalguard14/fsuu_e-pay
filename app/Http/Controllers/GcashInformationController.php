@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\GcashInformation;
 use App\Models\GcashTransaction;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -137,5 +138,22 @@ return response()->json([
 
 
     }
+
+
+
+public function mywalkin()
+{
+    $userId = auth()->user()->id;
+
+    $walkInPayments = Payment::where('user_id', $userId)
+        ->where('payment_method', 'Walk-in') // Filter for Walk-in payments only
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    return response()->json([
+        'walkInPayments' => $walkInPayments
+    ]);
+}
+
 
 }

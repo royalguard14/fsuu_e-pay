@@ -50,6 +50,18 @@
         margin: 0;
         text-align: center;
       }
+            .custom-title-brands {
+        font-family: 'RobotoBlack';
+        color: yellow;
+        -webkit-text-stroke: 1px black; /* Border around each letter */
+        letter-spacing: 1px;
+    
+      }
+      .footline{
+  background-color: #003366; 
+  border-top: 8px solid #FFC107;
+}
+
 </style>
 
 @yield('style')
@@ -144,6 +156,16 @@
     </li>
 @endif
 
+
+@if(auth()->user()->role->role_name === 'Cashier')
+    <li class="nav-item">
+        <a href="{{ route('payment.records') }}" class="nav-link">
+            <i class="nav-icon fas fa-circle"></i>
+            <p> Records</p>
+        </a>
+    </li>
+
+@endif
 
 
 
@@ -248,7 +270,7 @@
 <div class="content-wrapper" style="background: url('{{ asset('bg.png') }}') no-repeat center center fixed; background-size: cover;" >
   <!-- Content Header (Page header) -->
   <div class="content-header">
-    <div class="container-fluid custom-title-brand">
+    <div class="container-fluid custom-title-brands">
       <div class="row mb-2">
         <div class="col-sm-6">
           <h1 class="m-0">@yield('header')</h1>
@@ -278,13 +300,13 @@
 <!-- /.control-sidebar -->
 @enddeveloper
 <!-- Main Footer -->
-<footer class="main-footer">
+<footer class="main-footer footline">
   <!-- To the right -->
   <div class="float-right d-none d-sm-inline">
     {{ config('app.custom_name') }}
   </div>
   <!-- Default to the left -->
-  <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io"></a>.</strong> All rights reserved.
+     <strong>Copyright &copy; 2025 <a href="https://www.facebook.com/profile.php?id=61572728822378">MGX TECH</a>.</strong> All rights reserved.
 </footer>
 </div>
 <!-- ./wrapper -->

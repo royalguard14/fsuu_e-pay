@@ -40,28 +40,37 @@ public function update(Request $request, $id)
     $user = User::findOrFail($id);
     $profile = $user->profile;
 
-    // Validation
-    $request->validate([
-        'firstname' => 'required|string|max:255',
-        'lastname' => 'required|string|max:255',
-        'phone_number' => 'nullable|string|max:20',
-        'address' => 'nullable|string|max:255',
-        'bio' => 'nullable|string',
-        'birthdate' => 'nullable|date',
-        'gender' => 'nullable|string|in:Male,Female,Other',
-        'nationality' => 'nullable|string|max:100',
-        'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
-    ]);
 
-    // Update profile info
-    $profile->firstname = $request->firstname;
-    $profile->lastname = $request->lastname;
-    $profile->phone_number = $request->phone_number;
-    $profile->address = $request->address;
-    $profile->bio = $request->bio;
-    $profile->birthdate = $request->birthdate;
-    $profile->gender = $request->gender;
-    $profile->nationality = $request->nationality;
+ // Validation
+$request->validate([
+    'firstname' => 'nullable|string|max:255',
+    'lastname' => 'nullable|string|max:255',
+    'phone_number' => 'nullable|string|max:20',
+    'address' => 'nullable|string|max:255',
+    'bio' => 'nullable|string',
+    'birthdate' => 'nullable|date',
+    'gender' => 'nullable|string|in:Male,Female,Other',
+    'nationality' => 'nullable|string|max:100',
+    'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+]);
+
+// Fetch profile or create a new instance
+$profile = Profile::firstOrNew(['user_id' => auth()->id()]);
+
+// Fill with request data or blank if null
+$profile->fill([
+    'firstname'      => $request->firstname ?? '',
+    'lastname'       => $request->lastname ?? '',
+    'phone_number'   => $request->phone_number ?? '',
+    'address'        => $request->address ?? '',
+    'bio'            => $request->bio ?? '',
+    'gender'         => $request->gender ?? '',
+    'nationality'    => $request->nationality ?? '',
+]);
+
+// Save profile
+$profile->save();
+
 
     // Check if the profile has an existing picture and delete it
     if ($request->hasFile('profile_picture')) {

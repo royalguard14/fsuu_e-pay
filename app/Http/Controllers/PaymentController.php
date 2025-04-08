@@ -11,6 +11,8 @@ use App\Models\FeeBreakdown;
 use App\Models\Payment;
 use App\Models\GcashInformation;
 use App\Models\GcashTransaction;
+use PhpOffice\PhpWord\TemplateProcessor;
+use Illuminate\Support\Facades\Auth;
 
 
 class PaymentController extends Controller
@@ -298,11 +300,20 @@ public function payViaGcash(Request $request)
 
 
 
+public function records()
+{
+    // Fetch payments and format the month-year
+    $payments = Payment::all();  // Or any query you're using to get the data
 
+    $monthYears = Payment::selectRaw("DATE_FORMAT(payment_date, '%Y-%m') as month_year")
+                          ->distinct()
+                          ->get()
+                          ->pluck('month_year');
 
+    $cashierName = ucwords(Auth::user()->profile->firstname.' '. Auth::user()->profile->lastname);
 
-
-
+    return view('payment.records', compact('payments', 'monthYears','cashierName'));
+}
 
 
 

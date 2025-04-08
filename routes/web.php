@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Artisan;
 
 use Illuminate\Http\Request;
 
-
+use App\Models\Setting;
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RoleController;
@@ -35,6 +35,20 @@ use App\Http\Controllers\GcashTransactionController;
 */
 Route::get('/', function () { return redirect('/login');});
 Route::get('/error', function () {return view('error.index');})->name('error');
+Route::get('/about', function () {
+    $mission = Setting::where('id', 7)
+        ->where('function_desc', 'Mission')
+        ->value('function');
+
+    $vision = Setting::where('id', 8)
+        ->where('function_desc', 'Vision')
+        ->value('function');
+
+    return response()->json([
+        'mission' => $mission,
+        'vision' => $vision,
+    ]);
+});
 
 
 Route::middleware(['auth', 'checkRole:Developer'])->get('/clear', function () {
@@ -138,6 +152,11 @@ Route::middleware(['auth', 'role:student'])->group(function () {
 Route::prefix('payments')->name('payment.')->middleware(['auth'])->group(function () {
 
 
+
+
+
+
+
     Route::get('/admin', [PaymentController::class, 'admin'])
     ->name('admin')
     ->middleware('checkRole:Admin');
@@ -177,6 +196,38 @@ Route::prefix('payments')->name('payment.')->middleware(['auth'])->group(functio
     Route::get('/parent', [PaymentController::class, 'parent'])
     ->name('parent')
     ->middleware('checkRole:Parent');
+
+
+
+
+
+
+    Route::get('/records', [PaymentController::class, 'records'])
+    ->name('records')
+    ->middleware('checkRole:Cashier');
+
+
+        Route::get('/print_records', [PaymentController::class, 'print_records'])
+    ->name('print_records')
+    ->middleware('checkRole:Cashier');
+
+
+
+
+Route::post('/generate-payment-report', [PaymentController::class, 'generatePaymentReport'])->name('generate.payment.report');
+
+
+
+
+
+
+
+
+
+
+
+
+    
 });
 
 
@@ -293,6 +344,11 @@ Route::get('/mygcashtrans', [GcashInformationController::class, 'mygcash'])
 ->middleware('checkRole:Student');
 
 
+Route::get('/mywalkintrans', [GcashInformationController::class, 'mywalkin'])
+->name('mywalkins')
+->middleware('checkRole:Student');
+
+
 
 
 Route::post('/{id}/set-active', [GcashInformationController::class, 'isActive'])
@@ -309,8 +365,6 @@ Route::post('/update-status', [GcashTransactionController::class, 'updateStatus'
 
 
     
-
-
 
 
 

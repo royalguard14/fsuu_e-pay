@@ -40,6 +40,20 @@ class SettingSeeder extends Seeder
                 'function' => '1',  
                 'type' => 'backend',
             ],
+              
+               [
+                'function_desc' => 'Mission',
+                'function' => '1. Cathechism: to know Christ better and the teachings of the church
+2. Stewardship: to become humble and obient of the church
+3. Student-Centered: the student (individual and as a group) as the center of the school mission.
+4. Collaborative Learning: a collaborative relationship between students and teachers students and students',  
+'type' => 'frontend',
+            ],
+             [
+                'function_desc' => 'Vision',
+                'function' => 'Christ-centered person who care for the earth and fellow human beings',  
+                'type' => 'frontend',
+            ],
 
         ];
 

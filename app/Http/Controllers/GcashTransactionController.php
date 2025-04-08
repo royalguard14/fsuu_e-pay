@@ -44,40 +44,50 @@ class GcashTransactionController extends Controller
     }
     
 
-    public function updateStatus(Request $request)
-    {
-        $request->validate([
-            'reference_number' => 'required|string|exists:gcash_transactions,reference_number',
-            'status' => 'required|in:approved,rejected'
-        ]);
-        $GcashTransaction = GcashTransaction::where('reference_number', $request->reference_number)->first();
-        if (!$GcashTransaction) {
-            return response()->json([
-                'error' => 'Payment not found.',
-                'icon' => 'error'
-            ], 500);
-        }
-        try {
-            
-            $currentAcademicYear = AcademicYear::where('current', true)->first();
+   public function updateStatus(Request $request)
+{
+    $request->validate([
+        'reference_number' => 'required|string|exists:gcash_transactions,reference_number',
+        'status' => 'required|in:approved,rejected'
+    ]);
 
-            $enrollment = EnrollmentHistory::where('user_id', $GcashTransaction->user_id)
+    $GcashTransaction = GcashTransaction::where('reference_number', $request->reference_number)->first();
+
+    if (!$GcashTransaction) {
+        return response()->json([
+            'error' => 'Payment not found.',
+            'icon' => 'error'
+        ], 500);
+    }
+
+    try {
+        // If status is rejected, just update and return
+        if ($request->status === 'rejected') {
+            $GcashTransaction->update(['status' => 'rejected']);
+
+            return response()->json([
+                'success' => 'GCash transaction rejected successfully.',
+                'icon' => 'success'
+            ]);
+        }
+
+        // Handle approval
+        $currentAcademicYear = AcademicYear::where('current', true)->first();
+
+        $enrollment = EnrollmentHistory::where('user_id', $GcashTransaction->user_id)
             ->where('academic_year_id', $currentAcademicYear->id)
             ->first();
 
-
-
-
-            if (!$enrollment) {
-             return response()->json([
-                'success' => 'No active enrollment found!',
+        if (!$enrollment) {
+            return response()->json([
+                'error' => 'No active enrollment found!',
                 'icon' => 'error'
             ], 404);
-         }
+        }
 
+        $GcashTransaction->update(['status' => 'approved']);
 
-$GcashTransaction->update(['status' => $request->status]);
-         $payment = Payment::create([
+        Payment::create([
             'user_id' => $GcashTransaction->user_id,
             'enrollment_history_id' => $enrollment->id,
             'amount_paid' => $GcashTransaction->amount,
@@ -87,15 +97,17 @@ $GcashTransaction->update(['status' => $request->status]);
             'notes' => $GcashTransaction->receipt,
             'cashier_id' => auth()->id()
         ]);
-         return response()->json([
-            'success' => 'Payment status updated successfully.!',
+
+        return response()->json([
+            'success' => 'GCash transaction approved and payment recorded successfully.',
             'icon' => 'success'
         ]);
-     } catch (\Exception $e) {
+    } catch (\Exception $e) {
         return response()->json([
             'error' => 'Failed to update GCash payment.',
             'icon' => 'error'
         ], 500);
     }
 }
+
 }

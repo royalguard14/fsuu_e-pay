@@ -57,6 +57,10 @@ Payment Management
                     <li class="nav-item">
                         <a class="nav-link" id="gcash-transactions-tab" data-toggle="pill" href="#gcash-transactions" role="tab" aria-controls="gcash-transactions" aria-selected="false">GCash Transactions</a>
                     </li>
+
+                            <li class="nav-item">
+                        <a class="nav-link" id="walkin-transactions-tab" data-toggle="pill" href="#walkin-transactions" role="tab" aria-controls="walkin-transactions" aria-selected="false">Walk-in Transactions</a>
+                    </li>
                 </ul>
             </div>
             <div class="card-body">
@@ -123,6 +127,22 @@ Payment Management
                         </tr>
                     </thead>
                     <tbody id="gcashTransactionTable">
+                    </tbody>
+                </table>
+            </div>
+
+
+                         <div class="tab-pane fade" id="walkin-transactions" role="tabpanel" aria-labelledby="walkin-transactions-tab">
+                 <table class="table table-striped" id="walkintable">
+                    <thead>
+                        <tr>
+                            <th>Transaction Date</th>
+                            <th>Amount</th>
+                            <th>Reference Number</th>
+                        
+                        </tr>
+                    </thead>
+                    <tbody id="walkinTransactionTable">
                     </tbody>
                 </table>
             </div>
@@ -200,6 +220,7 @@ Payment Management
         loadFeeBreakdown(userId)
         loadgcashtransaction();
         getActiveGcash();
+        loadwalkintransaction();
     });
 </script>
 <script>
@@ -408,6 +429,57 @@ document.getElementById('suggestedAmount').innerText = `₱${data.suggestedAmoun
     .catch(error => console.error('Error loading gcash transactions:', error));
 }
 </script>
+
+
+
+<script type="text/javascript">
+function loadwalkintransaction() {
+    fetch(`/gcash/mywalkintrans`)
+    .then(response => response.json())
+    .then(data => {
+        let tableBody = document.getElementById('walkinTransactionTable');
+        tableBody.innerHTML = '';
+
+        if (data.walkInPayments.length > 0) {
+            data.walkInPayments.forEach(transaction => {
+                // Format the date like 'March 9, 2025'
+                let date = transaction.created_at
+                    ? new Date(transaction.created_at).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    })
+                    : 'N/A';
+
+                let row = `
+                    <tr>
+                        <td>${date}</td>
+                        <td>₱${parseFloat(transaction.amount_paid).toFixed(2)}</td>
+                        <td>${transaction.reference_number || 'N/A'}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+
+            // Reinitialize DataTable
+            $('#walkintable').DataTable().destroy();
+            $('#walkintable').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": true,
+                "ordering": false,
+                "info": false,
+                "autoWidth": false,
+                "responsive": true,
+            });
+        } else {
+            tableBody.innerHTML = '<tr><td colspan="4" class="text-center">No transactions found.</td></tr>';
+        }
+    })
+    .catch(error => console.error('Error loading walk-in transactions:', error));
+}
+</script>
+
 
 
 <script type="text/javascript">
