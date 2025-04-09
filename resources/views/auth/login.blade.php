@@ -1,7 +1,7 @@
 @extends('layouts.master2')
 
 @section('content')
-<h3 class="custom-title"> E-PAYMENT</h3>
+<h3 class="custom-title-epay"> E-PAYMENT</h3>
      <div class="row">
       <div class="col-lg-6">
         <div class="card login-card">

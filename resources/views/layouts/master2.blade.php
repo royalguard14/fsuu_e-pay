@@ -57,6 +57,17 @@
   letter-spacing: 1px;
   white-space: nowrap;  /* Prevent text wrapping */
 }
+
+
+    .custom-title-epay {
+  font-family: 'RobotoBlack', sans-serif;
+  color: yellow;
+  -webkit-text-stroke: 2px black;
+  margin: 0;
+  font-size: 5vw;  /* Base font size, responsive with viewport width */
+  letter-spacing: 1px;
+  white-space: nowrap;  /* Prevent text wrapping */
+  }
 /* Adjust logo size and font size on smaller screens */
 @media (max-width: 768px) {
   .logo-img {
@@ -65,6 +76,19 @@
   .custom-title {
     font-size: 3vw; /* Adjust font size for tablets */
   }
+
+
+  .custom-title-epay {
+  font-family: 'RobotoBlack', sans-serif;
+  color: yellow;
+  -webkit-text-stroke: 1px black;
+  margin: 0;
+  font-size: 3vw;  /* Base font size, responsive with viewport width */
+  letter-spacing: 1px;
+  white-space: nowrap;  /* Prevent text wrapping */
+  }
+
+
 }
 /* Adjust logo size and font size on mobile screens */
 @media (max-width: 480px) {
@@ -75,6 +99,17 @@
     font-size: 3vw; /* Larger text size on mobile */
      -webkit-text-stroke: 1px black;
   }
+
+    .custom-title-epay {
+  font-family: 'RobotoBlack', sans-serif;
+  color: yellow;
+  -webkit-text-stroke: 1px black;
+  margin: 0;
+  font-size: 5vw;  /* Base font size, responsive with viewport width */
+  letter-spacing: 1px;
+  white-space: nowrap;  /* Prevent text wrapping */
+  }
+
 }
 /* Footer Logo Styling */
 .footer-logo {
