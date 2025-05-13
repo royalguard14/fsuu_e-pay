@@ -110,8 +110,8 @@ Payment Management
         <table class="table table-head-fixed text-nowrap table-striped" id="rejectedGcashTable">
           <thead>
             <tr>
-              <th>Date</th>
               <th>Reference No.</th>
+              <th>Account Name</th>
               <th>Reason</th>
             </tr>
           </thead>
@@ -421,8 +421,9 @@ Payment Management
 <div class="tab-pane fade" id="custom-tabs-one-details" role="tabpanel" aria-labelledby="custom-tabs-one-details-tab">
  <div id="paymentSummary">
     <h5>Total Amount Paid: <span id="totalPaid">₱0.00</span></h5>
+    <h5>Total fee: <span id="totalfee">₱0.00</span></h5>
     <h5>Total Balance: <span id="totalBalance">₱0.00</span></h5>
-    <h5>Suggested Amount to Pay: <span id="suggestedAmount">₱0.00</span></h5>
+    
 </div>
 <table class="table table-striped" id="monthlyPaymentsTable">
     <thead>
@@ -661,6 +662,13 @@ function loadFeeBreakdown(studentId) {
 
                     </tr>
             `;
+
+
+// Update total fee in the <span> element
+document.getElementById('totalfee').textContent = `₱${totalAmount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+
+
             tableBody.innerHTML += totalRow;
                 // Destroy existing DataTable if it exists
             if ($.fn.DataTable.isDataTable('#feeBreakdownTable')) {
@@ -774,7 +782,8 @@ function submitPayment() {
                 if (data.message && data.message === "No enrollment found") {
                     document.getElementById('totalPaid').innerText = `₱00.00`;
                     document.getElementById('totalBalance').innerText = `₱00.00`;
-                    document.getElementById('suggestedAmount').innerText = `₱00.00`;
+                    //document.getElementById('suggestedAmount').innerText = `₱00.00`;
+                    document.getElementById('totalfee').innerText = `₱00.00`;
                     const tableBody = document.querySelector('#monthlyPaymentsTable tbody');
                     tableBody.innerHTML = ''; // Clear existing rows
                     return; // Exit the function as no data is available
@@ -783,7 +792,7 @@ function submitPayment() {
                 // Set the payment details if data is valid
                 document.getElementById('totalPaid').innerText = `₱${data.totalPaid}`;
                 document.getElementById('totalBalance').innerText = `₱${data.totalBalance}`;
-                document.getElementById('suggestedAmount').innerText = `₱${data.suggestedAmount}`;
+                //document.getElementById('suggestedAmount').innerText = `₱${data.suggestedAmount}`;
 
                 // Generate the monthly payments table
                 const tableBody = document.querySelector('#monthlyPaymentsTable tbody');
