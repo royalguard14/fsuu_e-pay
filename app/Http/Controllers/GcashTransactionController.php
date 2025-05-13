@@ -17,11 +17,18 @@ class GcashTransactionController extends Controller
     }
     
 
-    public function allpending() {
-        $pendings = GcashTransaction::where('status', 'pending')->with('gcashInformation','profile')->get();
+public function allTransactions()
+{
+    $pending = GcashTransaction::where('status', 'pending')->with('gcashInformation', 'profile')->get();
+    $approved = GcashTransaction::where('status', 'approved')->with('gcashInformation', 'profile')->get();
+    $rejected = GcashTransaction::where('status', 'rejected')->with('gcashInformation', 'profile')->get();
 
-        return response()->json($pendings);
-    }
+    return response()->json([
+        'pending' => $pending,
+        'approved' => $approved,
+        'rejected' => $rejected,
+    ]);
+}
 
     
     public function store(Request $request) {
@@ -44,11 +51,15 @@ class GcashTransactionController extends Controller
     }
     
 
-   public function updateStatus(Request $request)
+ public function updateStatus(Request $request)
 {
+
+
+    #dd($request->all());
     $request->validate([
         'reference_number' => 'required|string|exists:gcash_transactions,reference_number',
-        'status' => 'required|in:approved,rejected'
+        'status' => 'required|in:approved,rejected',
+        'reason' => 'nullable|string|max:500'
     ]);
 
     $GcashTransaction = GcashTransaction::where('reference_number', $request->reference_number)->first();
@@ -61,9 +72,12 @@ class GcashTransactionController extends Controller
     }
 
     try {
-        // If status is rejected, just update and return
+        // If status is rejected, update status and reason
         if ($request->status === 'rejected') {
-            $GcashTransaction->update(['status' => 'rejected']);
+            $GcashTransaction->update([
+                'status' => 'rejected',
+                'reason' => $request->reason
+            ]);
 
             return response()->json([
                 'success' => 'GCash transaction rejected successfully.',
@@ -109,5 +123,6 @@ class GcashTransactionController extends Controller
         ], 500);
     }
 }
+
 
 }

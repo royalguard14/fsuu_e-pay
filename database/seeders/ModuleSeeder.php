@@ -73,7 +73,7 @@ Module::create([
 
 Module::create([
     'name' => 'GCash',
-    'icon' => 'fa-money',
+    'icon' => 'fa-mobile-alt',
     'description' => 'Manage Gcash Account',
     'url' => 'gcash.index'  
 ]);

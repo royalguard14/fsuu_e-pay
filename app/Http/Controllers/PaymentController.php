@@ -24,7 +24,24 @@ class PaymentController extends Controller
 
     public function cashier()
     {
-        return view('payment.cashier');
+
+
+
+    $cashierName = Auth::user()->profile && Auth::user()->profile->firstname && Auth::user()->profile->lastname
+    ? ucwords(Auth::user()->profile->firstname . ' ' . Auth::user()->profile->lastname)
+    : 'John Smith';
+
+
+
+
+
+
+
+
+
+
+
+        return view('payment.cashier', compact('cashierName'));
     }
 
     // Search students by LRN, firstname, or lastname
@@ -310,7 +327,10 @@ public function records()
                           ->get()
                           ->pluck('month_year');
 
-    $cashierName = ucwords(Auth::user()->profile->firstname.' '. Auth::user()->profile->lastname);
+    $cashierName = Auth::user()->profile && Auth::user()->profile->firstname && Auth::user()->profile->lastname
+    ? ucwords(Auth::user()->profile->firstname . ' ' . Auth::user()->profile->lastname)
+    : 'John Smith';
+
 
     return view('payment.records', compact('payments', 'monthYears','cashierName'));
 }
@@ -318,7 +338,83 @@ public function records()
 
 
 
+public function print_records_student($userId, Request $request)
+{
+    // Get the student's profile
+    $profile = Profile::where('user_id', $userId)->first(['firstname', 'middlename', 'lastname']);
 
+    if (!$profile) {
+        return response()->json(['error' => 'Student not found'], 404);
+    }
+
+    // Merge names
+    $fullName = $profile->firstname;
+    if (!empty($profile->middlename)) {
+        $fullName .= ' ' . $profile->middlename;
+    }
+    $fullName .= ' ' . $profile->lastname;
+
+    // Get the current academic year
+    $currentAcademicYear = AcademicYear::where('current', true)->first();
+
+    // Get enrollment record
+    $enrollment = EnrollmentHistory::where('user_id', $userId)
+        ->where('academic_year_id', $currentAcademicYear->id)
+        ->first();
+
+    if (!$enrollment) {
+        return response()->json(['error' => 'No active enrollment found'], 404);
+    }
+
+    // Get fee breakdown
+    $fee = FeeBreakdown::where('grade_level_id', $enrollment->grade_level_id)
+        ->where('academic_year_id', $currentAcademicYear->id)
+        ->first();
+
+    if (!$fee) {
+        return response()->json(['error' => 'No fee breakdown found'], 404);
+    }
+
+    // Decode and sum other fees
+    $otherFees = json_decode($fee->other_fees, true);
+    $totalFees = $fee->tuition_fee + collect($otherFees)->sum();
+
+    // Calculate monthly payment based on scholarship
+    $monthlyPayment = $enrollment->scholar
+        ? round($totalFees * 0.2683 / 10)
+        : round($totalFees / 10);
+
+    // Calculate total amount paid
+    $totalPaid = Payment::where('user_id', $userId)
+        ->where('enrollment_history_id', $enrollment->id)
+        ->sum('amount_paid');
+
+    // Calculate balance
+    $remainingBalance = $enrollment->scholar
+        ? round($totalFees * 0.2683)
+        : $totalFees - $totalPaid;
+
+    // Get detailed payment history for current academic year
+    $payments = Payment::where('user_id', $userId)
+        ->whereHas('enrollmentHistory', function ($query) use ($currentAcademicYear) {
+            $query->where('academic_year_id', $currentAcademicYear->id);
+        })
+        ->when($request->search, function ($query) use ($request) {
+            $query->where('reference_number', 'like', "%{$request->search}%");
+        })
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    // Return all data in one response
+    return response()->json([
+        'fullName' => $fullName,
+        'totalPaid' => number_format($totalPaid),
+        'totalBalance' => number_format($remainingBalance),
+        'suggestedAmount' => number_format($remainingBalance),
+        'totalFees' => number_format($totalFees, 2),
+        'paymentHistory' => $payments
+    ]);
+}
 
 
 

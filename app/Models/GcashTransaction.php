@@ -16,6 +16,7 @@ class GcashTransaction extends Model
         'reference_number',
         'receipt',
         'status',
+        'reason',
     ];
 
     // Relationship with User

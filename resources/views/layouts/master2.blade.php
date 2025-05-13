@@ -172,7 +172,7 @@
      <div class="main-header topnavs tops">
 
   <img src="footerlogo.png" alt="AdminLTE Logo" class="logo-img">
-  <span class="custom-title">FR. URIOS ACADEMY OF MAGALLANES, INC.</span>
+  <span class="custom-title">FATHER URIOS ACADEMY OF MAGALLANES, INC.</span>
 </div>
     <!-- /.navbar -->
     <!-- Content Wrapper. Contains page content -->

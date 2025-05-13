@@ -177,6 +177,10 @@ Route::prefix('payments')->name('payment.')->middleware(['auth'])->group(functio
 
 
 
+    Route::get('{studentId}/printable-transactions', [PaymentController::class, 'print_records_student'])
+    ->name('print_records')
+    ->middleware('checkRole:Cashier');
+
 
 
     Route::get('/student', [PaymentController::class, 'student'])
@@ -207,11 +211,6 @@ Route::prefix('payments')->name('payment.')->middleware(['auth'])->group(functio
     ->middleware('checkRole:Cashier');
 
 
-        Route::get('/print_records', [PaymentController::class, 'print_records'])
-    ->name('print_records')
-    ->middleware('checkRole:Cashier');
-
-
 
 
 Route::post('/generate-payment-report', [PaymentController::class, 'generatePaymentReport'])->name('generate.payment.report');
@@ -223,12 +222,9 @@ Route::post('/generate-payment-report', [PaymentController::class, 'generatePaym
 
 
 
-
-
-
-
     
 });
+
 
 
 
@@ -357,7 +353,7 @@ Route::post('/{id}/set-active', [GcashInformationController::class, 'isActive'])
 
 
 
-Route::get('/allpending', [GcashTransactionController::class, 'allpending'])
+Route::get('/allpending', [GcashTransactionController::class, 'allTransactions'])
 ->name('allpending')
 ->middleware('checkRole:Cashier');
 

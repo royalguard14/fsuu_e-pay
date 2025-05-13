@@ -17,7 +17,7 @@ Administration Dashboard
     <div class="card-header text-center"><h3> SY: {{$currentAcademicYear->start}} - {{$currentAcademicYear->end}}</h3></div>
 </div>
 <div class="row">
-    <div class="col-12 col-sm-6 col-md-4">
+    <div class="col-12 col-sm-6 col-md-3">
         <div class="info-box">
             <span class="info-box-icon bg-info elevation-1"><i class="fas fa-wallet"></i></span>
             <div class="info-box-content">
@@ -26,7 +26,7 @@ Administration Dashboard
             </div>
         </div>
     </div>
-    <div class="col-12 col-sm-6 col-md-4">
+    <div class="col-12 col-sm-6 col-md-3">
         <div class="info-box">
             <span class="info-box-icon bg-success elevation-1"><i class="fas fa-hand-holding-usd"></i></span>
             <div class="info-box-content">
@@ -35,7 +35,16 @@ Administration Dashboard
             </div>
         </div>
     </div>
-    <div class="col-12 col-sm-6 col-md-4">
+        <div class="col-12 col-sm-6 col-md-3">
+        <div class="info-box">
+            <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-money-bill-wave"></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Total Money to be Collected</span>
+                <span class="info-box-number">{{ number_format($totalExpected - $totalCollected, 2) }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-md-3">
         <div class="info-box">
             <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-users"></i></span>
             <div class="info-box-content">
